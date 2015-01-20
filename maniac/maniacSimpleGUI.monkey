@@ -1047,7 +1047,8 @@ Class RadioElement
 	End Method 
 	
 	Method Draw()
-	
+    'Drawing the Selectable Circle
+    Drw_Ellipsis( X, Y, Width, Height)
 	End Method 
 End Class 
 public
