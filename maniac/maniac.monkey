@@ -87,12 +87,13 @@ Featurelist:
 
 Import maniacLowLevel			'325		364
 Import maniacFont				'249
-Import maniacDebug				'334
+'Import maniacDebug				'334
 Import maniacGraphics			'686		763
 Import maniacMisc				'248
 Import maniacSimpleGUI			'1214		1515
 Import maniacTween				'667
 Import maniacMap				'168
+Import maniacWIP
 
 
 
@@ -106,6 +107,8 @@ Global MANIAC_IMG_STARBLUR:Image
 Global MANIAC_IMG_BACKGROUND:Image 
 Global MANIAC_IMG_FRAME_RAW:Image 		'
 Global MANIAC_IMG_FRAME_BLUR:Image
+Global MANIAC_IMG_FRAME_SMOOTHRECT:Image
+Global MANIAC_IMG_FRAME_SMOOTHRECTBLUR:Image 
 Global MANIAC_IMG_SLIDERLINE:Image
 Global MANIAC_IMG_SLIDERPICKER:Image 
 Global MANIAC_IMG_EDITICON:Image
