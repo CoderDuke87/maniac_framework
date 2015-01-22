@@ -53,6 +53,32 @@ End
 	End Function 
 	</pre>
 #End
+Function Array2Dstr:String[][] (i:Int, j:Int,fill:String = "")
+	
+    Local arr:String[][] = New String[i][]
+    For Local ind = 0 Until i
+        arr[ind] = New String[j]
+    Next
+    
+    For Local w:Int = 0 Until i
+    	For Local h:Int = 0 Until j
+    		arr[w][h] = fill
+    	Next
+    Next 
+    Return arr		
+End
+#Rem monkeydoc
+	This function creates a new 2 Dimensional Int Array with i and j dimensions.
+	optionaly You can add a initial Value fill. Standard fill value will then be 0.
+	
+	<pre>
+	Import maniac
+	
+	Function Main:int()
+		local array:Int[][] = Array2D(10,5)
+	End Function 
+	</pre>
+#End
 Function Array2Dmf:ManiacField[][] (i:Int, j:Int)
 	
     Local arr:ManiacField[][] = New ManiacField[i][]
@@ -140,9 +166,12 @@ End Function
 #End
 Const TIMESTAMP_TIME_DATE:Int = 0
 Const TIMESTAMP_DATE_TIME:Int = 1
+Const TIMESTAMP_DATE_ONLY:Int = 2
+Const TIMESTAMP_TIME_ONLY:Int = 3
+
 Function GetTimeStamp:String(_Style:Int = 0,_Order:Int = 0)
 	'Local currDate:String 
-	Maniac_Debug.addCalc()
+	'Maniac_Debug.addCalc()
 	Local date:=GetDate()
     
     Local months:=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
@@ -167,7 +196,15 @@ Function GetTimeStamp:String(_Style:Int = 0,_Order:Int = 0)
     			Case 2
     				now = year+" "+month+" "+day
     		End Select 
-    		Default 
+    	 
+    	Case TIMESTAMP_DATE_ONLY
+    		Select _Order
+    			Case 0
+    				now = month+"_"+day
+    		End Select 
+    	Case TIMESTAMP_TIME_ONLY
+    	
+    	Default
     End Select   
    
 	Return now
@@ -246,3 +283,79 @@ Function GetFolderFiles2:List<String>(_Path:String)
 	
 	Return list
 End Function 
+
+Class ManiacTextFile
+
+	Field filecontent:String
+	Field currentline:String
+	Field remaininglines:String
+
+	Method New(filename:String)
+	
+		filecontent = LoadString(filename)	' Load text file into string
+		remaininglines = filecontent.Replace("~n","") 'Remove newline characters
+	
+	End
+
+	
+	Method Eof:Bool() 'check for End-of-file - returns true if end of file reached
+
+		If remaininglines = ""
+			
+			Return True
+		Else
+			'Print "left: " + remaininglines
+			Return False
+		Endif
+	
+	End 
+	
+	Method GetLine:String()
+	
+		Return currentline	'return the current line in the text file
+	
+	End 
+	
+	Method ReadLine:Void()	'read the next line in the file into the currentline
+		Local newlinecharindex:Int
+		
+		If Eof()
+		
+		Else
+		
+			newlinecharindex = remaininglines.Find("~r") 'look for carriage returns and return the text that is before that..
+			currentline = remaininglines[0..newlinecharindex]
+			remaininglines = remaininglines[newlinecharindex+1..]
+			
+	 	Endif 
+	
+	End 
+
+	Method GetDataName:String() 
+		' see example for details on how this is used, basically returns text in the current line before the equals sign, useful for config files and the like
+		
+		Local equalsposition:Int
+		equalsposition = currentline.Find("=")
+		
+		If equalsposition = -1 Then Return "" Else Return currentline[0..equalsposition]
+		
+	
+	End 
+
+
+	Method GetDataValue:String()
+	' see example for details on how this is used, basically returns text in the line after the equals sign..useful for config files and the like
+	
+		Local equalsposition:Int
+		equalsposition = currentline.Find("=")
+		
+		
+		If equalsposition = -1 Then 
+			Return "" 
+		Else 
+			Return currentline[equalsposition+1..]
+		Endif 
+	End
+
+
+End Class
