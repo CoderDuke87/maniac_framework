@@ -43,12 +43,14 @@ Class ManiacButtonWIP
 	Field MidX:Float,MidY:Float			'aktuelle Position des Buttons (Durch Animationen veränderbar
 	Field oX:Float,oY:Float 		'Original X,Y << Das ist die Feste Position des Buttons
 	Field Width:Float,Height:Float			'Breite und Höhe in Pxl
+	Field oWidth:Float,oHeight:Float 
 	
 	'
 	Field Caption:String		'Aufschrift
 	Field CaptionColor:Int		'Color of the Caption
 	Field Angle:Float 			'Winkel zur Horizontalen in °
 	Field Alignment:Int			'ausrichtung des Textes (Left,Middle,Right)
+	Field AlignmentVertical:int	
 	Field bTransparent:Bool = False 
 	
 	'#### BACKGROUNDSTAUFF ####
@@ -88,6 +90,7 @@ Class ManiacButtonWIP
 	
 	'##### BUTTON INACTIVE-ANIMATIONS #######
 	Field bInactiveAnim:Bool = False
+	Field bInactiveAnimating:Bool = False 
 	Field InactiveTimeDelay:Int
 	Field InactiveAnim:Int
 	Field InactiveAnimType:Int 
@@ -133,6 +136,8 @@ Class ManiacButtonWIP
 		MidY 	= _MidY
 		Width 	= _Width
 		Height 	= _Height
+		oWidth 	= _Width
+		oHeight = _Height
 		Alignment =_Alignment
 		Caption =	_Caption
 		CaptionColor = _Color +6
@@ -332,6 +337,10 @@ Class ManiacButtonWIP
 			
 		Endif 
 		
+		If bInactiveAnim = True
+			'Check when was the Last Animation
+			'bInactiveAnimating
+		Endif 
 		
 		'### User Input Stuff like MouseOver, ClickOn etc. ###
 		If MOBox(MidX-Width/2	, MidY-Height/2, Width, Height)
@@ -398,11 +407,11 @@ Class ManiacButtonWIP
 	End Method 
 	
 	
-	Method startAnimPopOut(_AnimTime:Int = 1500,_Style:String = "Bounce",_Ease:String = "Out")
-		tweenX = ll_Tween(_Style,_Ease,0,Width,_AnimTime )
+	Method startAnimPopOut(_AnimTime:Int = 1500,_Style:String = "Back",_Ease:String = "Out")
+		tweenX = ll_Tween(_Style,_Ease,0,oWidth,_AnimTime )
 		tweenX.Start()
-		tweenAngle = ll_Tween(_Style,_Ease,0,Height,_AnimTime )
-		tweenAngle.Start()
+		tweenY = ll_Tween(_Style,_Ease,0,oHeight,_AnimTime )
+		tweenY.Start()
 		bRunningAnimation = True 
 		AnimStartTime = Millisecs()
 		AnimTime = _AnimTime
@@ -423,6 +432,21 @@ Class ManiacButtonWIP
 			Default 
 				Print "Alignment doesnt exist, Set To Middle!!!"
 				Alignment =	ALIGNMENT_MIDDLE
+		End Select
+	End Method 
+	
+	Method setAlignmentVertical(_Alignment:Int)
+		'Checking for using right Alignment Convention, else set to ALIGNMENT_MIDDLE
+		Select _Alignment
+			Case ALIGNMENT_TOP
+				AlignmentVertical = _Alignment
+			Case ALIGNMENT_MIDDLE
+				AlignmentVertical = _Alignment
+			Case ALIGNMENT_BOTTOM
+				AlignmentVertical = _Alignment
+			Default 
+				Print "Alignment doesnt exist, Set To Middle!!!"
+				AlignmentVertical =	ALIGNMENT_MIDDLE
 		End Select
 	End Method 
 	
@@ -494,9 +518,11 @@ Class ManiacButtonWIP
 		bOnClick_PlaySound = _isSoundOn
 	End Method 
 	
-	Method setInactiveAnim(_isActive:Bool = True,_inactiveTime:Int,_inactiveAnimType:Int = 0)
+	Method setInactiveAnim(_isActive:Bool = True,_inactiveTime:Int = 7500,_inactiveAnimType:Int = 0)
 		bInactiveAnim = _isActive
 		InactiveTimeDelay = _inactiveTime
+		InactiveAnim:Int
+		InactiveAnimType = _inactiveAnimType
 	End Method 
 	
 	
@@ -548,4 +574,5 @@ Class ManiacButtonWIP
 	
 	End Method 
 End Class 
+
 
