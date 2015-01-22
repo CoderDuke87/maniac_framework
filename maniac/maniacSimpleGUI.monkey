@@ -1000,7 +1000,19 @@ Class ManiacGallery	Implements IOnLoadImageComplete
 	
 End class 
 
+#Rem monkeydoc
+	This Class is a RadioGroup Gui Element.
+	
+	Example:
+	<pre>
+		Global tB:ManiacButton = new ManiacButton(100,100,300,32)
 
+		Function Main:Int()
+			New Example							
+			Return 0
+		End Function  
+	</pre>
+#End
 Class ManiacRadioGroup
 	Field X:Int,Y:Int,Width:Int,Height:Int
 	Field bFramed:Bool = true
@@ -1025,21 +1037,61 @@ Class ManiacRadioGroup
 	End Method 
 	
 	Method addChoice(_Caption:String,_Value:Int)
-		listElements.AddLast(New RadioElement(_Caption,_Value))
+   		Local oRE:RadioElement = New RadioElement(_Caption,_Value)
+    	oRE.ID = listElements.Count()
+		listElements.AddLast(oRE)
 		reOrder()
+	End Method 
+	
+	Method getActiveElementValue:Int()
+	    For Local oRE:RadioElement = Eachin listElements
+	      If oRE.isActive()
+	        Return oRE.Value
+	      Endif 
+	    Next 
+	End Method 
+	
+	
+	Method Update:Void()
+	    Local newClickID:Int = 0
+	    'Check for Clicking on a RadioElement
+	    For Local oRE:RadioElement = Eachin listElements
+	      If oRE.Update() <> -1
+	        setActiveElement(oRE.ID)
+	      Endif 
+	    Next 
+	End Method 
+	
+	
+	Method setActiveElement:Void(_ID:Int)
+	    For Local oRE:RadioElement = Eachin listElements
+	      If oRE.ID = _ID
+	        oRE.setActive(True)
+	      Else
+	        oRE.setActive(False)
+	      Endif  
+	    Next 
 	End Method 
 	
 	Private
 	Method reOrder()
-	
+	    Local eW:Float = ll_Width(Width,listElements.Count(),10)
+	    
+	    Local i:Int = 0
+	    For Local oRE:RadioElement = Eachin listElements
+	    	oRE.setPosition(X + 10 + i*eW/2.0, Y + Height*0.5, eW/2,eW/2)
+	    	i +=1
+	    Next 
 	End Method 
 End Class 
 
 Private 
 Class RadioElement
+  	Field ID:Int 
 	Field Caption:String
 	Field Value:Int
 	Field X:Float,Y:Float,Width:Float,Height:Float 
+	Field bActive:Bool 
 	
 	Method New(_Caption:String,_Value:int)
 		Caption =_Caption 
@@ -1047,14 +1099,34 @@ Class RadioElement
 	End Method 
 	
 	Method Draw()
-    'Drawing the Selectable Circle
-    Drw_Ellipsis( X, Y, Width, Height)
+    	'Drawing the Selectable Circle
+    	Drw_Ellipsis( X, Y, Width, Height)
+	End Method 
+	
+	Method setPosition(_X:Float, _Y:Float, _Width:Float,_Height:Float)
+	    X = _X
+	    Y = _Y
+	    Width  = _Width
+	    Height = _Height
+	End Method 
+	
+	Method Update:Int()
+    	If MOCircle(X,Y,Width)
+     		If gl_mousereleased
+        		Return ID
+     		Endif 
+    	Endif 
+    	Return -1
+	End Method 
+	
+	Method setActive(_isActive:Bool = True)
+   		bActive = _isActive
 	End Method 
 End Class 
 public
 
 #Rem monkeydoc
-	This Class is a GalleryViewer Gui Element.
+	This Class is a CheckBox Gui Element.
 	Version 0.1
 	Example:
 	<pre>
@@ -1163,6 +1235,8 @@ Class ManiacDropDown
 	Field MOElement:Int 
 	Field SelectedElement:Int = 0
 	
+	Field tweenY:Tween
+	
 	Method New(_X:Float,_Y:Float,_Width:Float,_Height:Float,_Caption:String="")
 		Maniac_Debug.addStoredBools(1)
 		Maniac_Debug.addStoredInts(1)
@@ -1190,6 +1264,16 @@ Class ManiacDropDown
 			oL.Draw(X+5,Y+Height+oL.Line*(27+5),200,100)	
 		Next 
 	End Method 
+	
+	Method animOpen()
+		tweenY = ll_Tween(_Style,_Ease,_fromY,oY,_AnimTime )
+		tweenY.Start()
+	End Method
+	
+	Method animClose()
+	
+	End Method 
+	
 	
 	Method Draw()
 	
