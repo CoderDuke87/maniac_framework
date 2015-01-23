@@ -1,5 +1,5 @@
 #Rem monkeydoc Module maniac.maniacSimpleGUI
-	Simple GUI - Version 0.1.4 (alpha)  ~n
+	Simple GUI - Version 0.1.5 (alpha)  ~n
 	Copyright (C) 2015  Stephan Duckerschein~n
 	
 	Here You can find some GUI Elements to use for your App.
@@ -17,6 +17,10 @@
 		- Buglist:
 			ManiacButton -> Rolling Animation is not Ready yet
 	VERSION:~n
+	0.1.5	- updated Textfield Class
+				- now shows the Cursor, X-Alignment is available, set the Alpha, Wrap Textfield to Height of Text (Single Line Only at the Moment!!!!!)
+				- Bugfixed some Update and Drawing Stuff.
+				- changed Framethickness to 1 pxl ... now it looks much better
 	0.1.4	- added: ManiacCheckBox,DropDown,ListView, Dialog
 	0.1.3	- added a ImageGallery-Class >> ToDo: some imageLoading Bugfixes. UpdateEventAsync testing around ...
 	
@@ -72,17 +76,31 @@ Class ManiacTextfield
 	Field maniacID:Int 
 	Field ID:Int
 	Field inputString:String = ""
+	Field Caption:String = ""
 	Field X:Int,Y:Int
 	Field W:Int,H:int
 	
 	Field Style:Int  
+	
+	Field bShowButton:Bool 	= False 
+	Field bShowCaption:Bool
+	Field bWrapHeight:Bool = False 
+	Field bEditing:Bool = False 
+	Field bEndOnEnter:Bool = True 
+	
+	Field Alpha:Float 	= 1.0'Main Alpha Value.
 	Field Focus:Int		'0 - Standard ohne gfx effects , 1 - 
 
-	Field bEditing:Bool = False 
+	Field ColorBackground:Int = 8'COLOR_WHITE
+	Field AlphaCursor:Float 
+	Field TimeLastCursorChange:Int
+	Field TimeCursorChange:Int = 510
+	Field PosCursor:Float
 	
+	Field AlignmentCaption:Int 
 	
 	Public 
-	Method New(_X:Float,_Y:Float,_Width:Float,_Height:Float,istyle:Int = TEXTFIELD_STYLE_STD)
+	Method New(_X:Float,_Y:Float,_Width:Float,_Height:Float,_Caption:String = "",_Style:Int = TEXTFIELD_STYLE_STD)
 		If MANIAC_DEBUG = True
 			Maniac_Debug.addStoredBools()
 			Maniac_Debug.addStoredInts(8)
@@ -94,7 +112,10 @@ Class ManiacTextfield
 		Y 		= _Y
 		W 		= _Width
 		H 		= _Height
-		Style 	= istyle
+		Style 	= _Style
+		Caption = _Caption
+		Alpha = 1.0
+		AlignmentCaption = ALIGNMENT_MIDDLE
 	End Method 
 	
 		
@@ -103,21 +124,56 @@ Class ManiacTextfield
 		If MANIAC_DEBUG = True
 			Maniac_Debug.addTotCall()
 		Endif 
-		'Maniac_Debug.addTotCalc(2)
-		'Maniac_Debug.addTotDraws(2)
-		'If bFull = True
+
+		'### Check for Wrapping ###
+		If bWrapHeight = True
+			H = 30
+		Endif 
+		
+		'### Check for Click 
+		If bShowButton = True 
 			If TouchHit()
 				If MOBox(X,Y,(W*0.15),(H*1.0))
 					If bEditing = True
 						bEditing = False
+						Return 99
 					Else
 						bEditing = True
+						#If TARGET="android"
+							EnableKeyBoard()
+						#Endif 
 					Endif 
 				Endif 
-			Endif 
-		'Endif 
+			Endif
+			
+		Else 
+			If TouchHit()
+				If MOBox(X,Y,(W),(H))
+					If bEditing = True
+						bEditing = False
+					Else
+						bEditing = True
+						#If TARGET="android"
+							EnableKeyBoard()
+						#Endif 
+						
+					Endif 
+				Endif 
+			Endif
+		Endif 
 		
 		If bEditing = True 
+			'### Updating the Cursor Alpha
+			If (Millisecs() - TimeLastCursorChange ) > TimeCursorChange
+				TimeLastCursorChange = Millisecs()
+				If AlphaCursor > 0.8
+					AlphaCursor = 0.05
+				Else
+					AlphaCursor = 1.0
+				Endif 
+			
+			Endif 
+			'### Updating the KeyboardInput
 			Repeat  
 				Local char=GetChar()
 		        If Not char Exit
@@ -127,7 +183,12 @@ Class ManiacTextfield
 		        Endif
 		           
 		        If char = CHAR_ENTER
-					DisableKeyboard()
+		        	#If TARGET="android"
+						DisableKeyboard()
+					#Endif 
+					If bEndOnEnter = True
+						bEditing = False
+					Endif 
 					Return 99
 				Endif
 		           				
@@ -151,29 +212,56 @@ Class ManiacTextfield
 			Maniac_Debug.addTotCall()
 			Maniac_Debug.addTotDraws(3)
 		Endif 
-		SetAlpha 1
-		SetColor 255,255,255
-		DrawRect(X+W*0.15,Y,W-W*0.15,H)
 		
-		If bEditing = True
-			SetColor 0,255,0
-		Else
-			SetColor 255,0,0
+		'### Drawing Background ###
+		SetAlpha Alpha
+		Maniac_Color(ColorBackground)
+		'SetColor 255,255,255
+		DrawRect(X,Y,W,H)
+		
+		'### Drawing an Explaining Text to the Textfield ...
+		'ToDo: - Alignment (Top,Bottom), Color
+		SetColor 0,0,0
+		MANIAC_FONT.Wrap(Caption,X,Y-(ManiacFont.getH()+5),W,H,Caption.Length())
+				
+		'### Drawing an "Fertig"-Button ... if pressed, its same like "I'm Done with text, it will disable the Keyboard (for Android)
+		If bShowButton = True 
+			DrawImage MANIAC_IMG_EDITICON,X,Y,0,(W*0.15)/MANIAC_IMG_EDITICON.Width(),(H*1.0)/MANIAC_IMG_EDITICON.Height()
 		Endif 
 		
-		DrawImage MANIAC_IMG_EDITICON,X,Y,0,(W*0.15)/MANIAC_IMG_EDITICON.Width(),(H*1.0)/MANIAC_IMG_EDITICON.Height()
-		
+		'### Drawing the Input Text String ###
 		SetColor 0,0,0
-		MANIAC_FONT.Wrap(inputString,X+W*0.15,Y+H/2-ManiacFont.getH()/2,W,H,inputString.Length())
+		Local cursorPos:Float 
+		If bShowButton = True 
 		
+			MANIAC_FONT.Wrap(inputString,X+W*0.15,Y+H/2-ManiacFont.getH()/2,W,H,inputString.Length())
+		Else
+			'MANIAC_FONT.Wrap(inputString,X,Y+H/2-ManiacFont.getH()/2,W,H,inputString.Length())
+			cursorPos = Drw_ManiacText(inputString,X,Y,W,H,AlignmentCaption)
+		Endif 
+		
+		'### Drawing the Cursor ###
+		If bEditing = True 
+			Local iw:Int = MANIAC_FONT.getW(inputString)
+			SetAlpha AlphaCursor
+			MANIAC_FONT.Wrap("|",cursorPos,Y+H/2-ManiacFont.getH()/2,W,H,2)
+		Endif 
+		
+		'### Draw the Frame around the Textfield
+		SetAlpha Alpha 
 		If bEditing = True
 			SetColor 0,255,0
 		Else	
-			SetColor 255,0,0
+			SetColor 75,75,75
 		Endif 
-		Drw_Rect(X,Y,W,H,3)
+		Drw_Rect(X,Y,W,H,1)
 	End Method 
 	
+	
+	#rem
+		This Method is deprecatded.
+		It will be deleted in ver 1.1
+	#end
 	Method drawFull()
 		SetAlpha 1
 		SetColor 255,255,255
@@ -205,11 +293,30 @@ Class ManiacTextfield
 	Method setText(itext:String)
 		inputString = itext
 	End Method 
+	
+	Method setAlpha(_Value:Float)
+		Alpha = _Value
+	End Method 
+	
+	Method setWrapHeight(_Bool:Bool = True)
+		bWrapHeight = _Bool
+	End Method 
+	
+	Method setBackgroundColor:Void(_Color:Int)
+		ColorBackground = _Color
+	End Method 
+	
+	Method setCaption(_Text:String)
+		Caption = _Text
+	End Method 
 End Class
 
 Const ALIGNMENT_LEFT:Int = 1
 Const ALIGNMENT_MIDDLE:Int = 2
 Const ALIGNMENT_RIGHT:Int = 3
+Const ALIGNMENT_TOP:Int = 4
+Const ALIGNMENT_MIDDLEY:int = 5
+Const ALIGNMENT_BOTTOM:Int = 6
 
 Const ANIM_DROP:Int 	= 1
 Const ANIM_FADE:Int		= 2
