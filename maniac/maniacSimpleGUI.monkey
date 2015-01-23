@@ -9,7 +9,7 @@
 
 #rem
 	Work On:
-		DropDown,RadioGroup,FileExplorer,ListView for Version 0.1.5
+		DropDown,RadioGroup,FileExplorer,ListView for Version 0.1.6
 		
 		- need Color Scheme
 		- need Graphics Update
@@ -38,7 +38,7 @@
 		 x Slider
 		 x Checkbox
 		 x GalleryViewer
-		DropDown
+		 x DropDown
 		RadioBox
 		Docker
 		Tabs
@@ -88,6 +88,7 @@ Class ManiacTextfield
 	Field bEditing:Bool = False 
 	Field bEndOnEnter:Bool = True 
 	
+	Field Angle:Float = 0.0
 	Field Alpha:Float 	= 1.0'Main Alpha Value.
 	Field Focus:Int		'0 - Standard ohne gfx effects , 1 - 
 
@@ -140,7 +141,7 @@ Class ManiacTextfield
 					Else
 						bEditing = True
 						#If TARGET="android"
-							EnableKeyBoard()
+							EnableKeyboard()
 						#Endif 
 					Endif 
 				Endif 
@@ -154,7 +155,7 @@ Class ManiacTextfield
 					Else
 						bEditing = True
 						#If TARGET="android"
-							EnableKeyBoard()
+							EnableKeyboard()
 						#Endif 
 						
 					Endif 
@@ -213,6 +214,11 @@ Class ManiacTextfield
 			Maniac_Debug.addTotDraws(3)
 		Endif 
 		
+		'### Rotate The Matrix at the MidX/MidY Position around Angle
+		If Angle <> 0.0
+			RotateAt(X+W/2,Y+H/2, Angle)
+		Endif 
+	
 		'### Drawing Background ###
 		SetAlpha Alpha
 		Maniac_Color(ColorBackground)
@@ -255,6 +261,11 @@ Class ManiacTextfield
 			SetColor 75,75,75
 		Endif 
 		Drw_Rect(X,Y,W,H,1)
+		
+		'### Reset The MAtrix
+		If Angle <> 0.0
+			ResetMatrix()
+		Endif 
 	End Method 
 	
 	
@@ -356,7 +367,7 @@ Class ManiacButton
 	Field Angle:Float 			'Winkel zur Horizontalen in °
 	Field Alignment:Int			'ausrichtung des Textes (Left,Middle,Right)
 	Field bTransparent:Bool = false 
-	
+	Field bVisible:Bool 	= True 
 	
 	'#### EFFECTS STUFF ####
 	'Field 
@@ -376,6 +387,8 @@ Class ManiacButton
 	'#### FRAME STUFF ######
 	Field bFramed:Bool 		= True 
 	Field FrameColor:Int 
+	Field FrameType:Int 	= 0
+	Field FrameThickness:Int = 1
 	
 	Field Color:Int 							'Integerwert einer Farbe aus der Maniac_Color Funktion
 	
@@ -438,16 +451,24 @@ Class ManiacButton
 		FrameColor = _Color +6
 	End Method 
 	
-	Method Draw()
+	Method Draw:int()
 		If MANIAC_DEBUG = True
 			Maniac_Debug.addRenderedObject()
 		Endif  
+		
+		If bVisible = False
+			Return -1
+		Endif 
+		If Angle <> 0.0
+			RotateAt(MidX,MidY, Angle)
+		Endif
+		
 		
 		'##### GLOW EFFECT STUFF #####
 		If bGlow = True
 			Maniac_Color(GlowColor)
 			SetAlpha GlowAlpha
-			DrawImage MANIAC_IMG_FRAME_BLUR, MidX,MidY,Angle,Width*GlowRangeRatioX/MANIAC_IMG_FRAME_BLUR.Width(),Height*GlowRangeRatioY/MANIAC_IMG_FRAME_BLUR.Height()
+			DrawImage MANIAC_IMG_FRAME_BLUR, MidX,MidY,0,Width*GlowRangeRatioX/MANIAC_IMG_FRAME_BLUR.Width(),Height*GlowRangeRatioY/MANIAC_IMG_FRAME_BLUR.Height()
 			Maniac_Debug.addTotDraws(1)
 		End If
 		
@@ -483,13 +504,20 @@ Class ManiacButton
 				AddHeightByMO = 0
 			Endif 
 		Endif 
-		DrawRect(MidX- (Width +AddWidthByMO/2)/2+2,MidY-(Height+AddHeightByMO/2)/2+2,Width+AddWidthByMO-4,Height+AddHeightByMO-4)
+		DrawRect(MidX- (Width +AddWidthByMO/2)/2,MidY-(Height+AddHeightByMO/2)/2,Width+AddWidthByMO,Height+AddHeightByMO)
 		Maniac_Debug.addTotDraws(1)
+		
+		
 		'###### BUTTON FRAME ########
-		If bFramed = True	
-			Maniac_Color(FrameColor)
-			DrawImage MANIAC_IMG_FRAME_RAW , MidX,MidY,Angle,(Width+AddWidthByMO)/MANIAC_IMG_FRAME_RAW.Width(),(Height+AddHeightByMO)/MANIAC_IMG_FRAME_RAW.Height()
-			Maniac_Debug.addTotDraws(1)
+		If bFramed = True
+			If FrameType = 0	
+				Maniac_Color(FrameColor)
+				DrawImage MANIAC_IMG_FRAME_RAW , MidX,MidY,0,(Width+AddWidthByMO)/MANIAC_IMG_FRAME_RAW.Width(),(Height+AddHeightByMO)/MANIAC_IMG_FRAME_RAW.Height()
+				Maniac_Debug.addTotDraws(1)
+			Elseif FrameType = 1
+				Maniac_Color(FrameColor)
+				Drw_Rect(MidX-Width/2+AddWidthByMO,MidY-Height/2,Width,Height,FrameThickness)
+			Endif 
 		Else
 		
 		Endif 
@@ -528,6 +556,11 @@ Class ManiacButton
 			
 		Endif 
 		
+		
+		'### Reset The MAtrix
+		If Angle <> 0.0
+			ResetMatrix()
+		Endif 
 	End Method 
 	
 	Method Update:Int()
@@ -574,9 +607,6 @@ Class ManiacButton
 					tweenAngle.Update()
 					Angle = tweenAngle.Value()
 					MidX = tweenX.Value()
-					
-					
-				
 				Case ANIM_SLIDE
 					tweenX.Update()
 					MidX = tweenX.Value()
@@ -724,9 +754,11 @@ Class ManiacButton
 		GlowStyle = _GlowStyle
 	End Method 
 	
-	Method setFrame(_isFramed:Bool = True,_FrameColor:Int = 0)
+	Method setFrame(_isFramed:Bool = True,_FrameColor:Int = 0,_FrameType:Int=0,_FrameThickness:Int =1)
 		bFramed = _isFramed
 		FrameColor = _FrameColor
+		FrameType = _FrameType
+		FrameThickness = _FrameThickness
 	End Method 
 	
 	Method setMouseOverEffects(_isResizing:Bool= True ,_isBrightening:Bool=False,_isWobbling:Bool = false )
@@ -794,6 +826,10 @@ Class ManiacButton
 		MidX = oX
 		MidY = oY
 		Angle = 0
+	End Method 
+	
+	Method setVisible(_Bool:Bool)
+		bVisible = _Bool
 	End Method 
 End Class 
 
@@ -1590,12 +1626,14 @@ Class ManiacAnimRect
 	Field MidX:Float,MidY:Float			'aktuelle Position des Buttons (Durch Animationen veränderbar
 	Field oX:Float,oY:Float 		'Original X,Y << Das ist die Feste Position des Buttons
 	Field Width:Float,Height:Float			'Breite und Höhe in Pxl
+	Field oWidth:Float,oHeight:Float 
+	
 	
 	'
 	Field Caption:String		'Aufschrift
 	Field Angle:Float 			'Winkel zur Horizontalen in °
-	Field Alignment:Int			'ausrichtung des Textes (Left,Middle,Right)
-	
+	Field AlignX:Int			'ausrichtung des Textes (Left,Middle,Right)
+	Field AlignY:int
 	
 	Method setPosition(_X:float,_Y:float)
 		MidX = _X
@@ -1605,6 +1643,10 @@ Class ManiacAnimRect
 	Method setSize(_Width:Float,_Height:Float)
 		Width = _Width
 		Height =_Height
+	End Method 
+	
+	Method reSize(_Scale:Float = 1.0)
+		ScaleAt(MidX,MidY, _Scale, _Scale)
 	End Method 
 	
 	
