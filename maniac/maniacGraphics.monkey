@@ -1,5 +1,5 @@
 #Rem monkeydoc Module maniac.maniacGraphics
-	Graphics Module - Version 0.1.2 (alpha)  ~n
+	Graphics Module - Version 0.1.3 (alpha)  ~n
 	Copyright (C) 2015  Stephan Duckerschein~n
 	
 	Here You can find some "ad-Hoc" Graphic-Elements to use for your App.
@@ -8,10 +8,13 @@
 		
 	ToDo For v. 0.1.3:
 		- Complete Colors: GELB,ORANGE,MAGENTA,BROWN,PURPLE +####
-		- Make Primitives rotateable
-		- Complete ManiacImage ImageEffects 
+		- Make Primitives rotateable 
 		~n
 	VERSION HISTORY: ~n
+	0.1.3~n
+		Added some Browns
+		Drw_Rect is now rotateable
+	
 	0.1.2~n
 		Added: some more Green , Blue & Yellow Colors~n
 		Added ManiacImage
@@ -44,13 +47,18 @@ Import maniacDebug
 	This Function Draws a Outlining Rectangle at the Position _X,_Y with the Dimensions _Witdth and _Height with the thickness _Thickness.
 	You must call this within the OnRender() Method
 #End
-Function Drw_Rect:Int(_X:Float,_Y:Float,_Width:Float,_Height:Float,_Thickness:Int=1)
+Function Drw_Rect:Int(_X:Float,_Y:Float,_Width:Float,_Height:Float,_Thickness:Int=1,_Angle:Float = 0.0)
 	'Maniac_Debug.addRenderedObject()
 	If MANIAC_DEBUG = True
 		Maniac_Debug.addTotDraws(4*_Thickness)
 	endif
-	'Maniac_Debug.
-	'Maniac_Debug.
+	
+	'### Rotate The Matrix at the MidX/MidY Position around Angle
+	If _Angle <> 0.0
+		RotateAt(_X+_Width/2,_Y+_Height/2, _Angle)
+	Endif 
+	
+	'### Drawing the Outline Rect with Thickness in Pixels for the Frame
 	For Local i:Int = 0 until _Thickness
 		'Obere Kante
 		DrawLine (_X-i,_Y-i,_X +_Width+i,_Y-i)
@@ -64,7 +72,11 @@ Function Drw_Rect:Int(_X:Float,_Y:Float,_Width:Float,_Height:Float,_Thickness:In
 		'Recht Seite
 		DrawLine (_X+_Width+i,_Y-i,_X+_Width+i,_Y+_Height+i)
 	Next 
-
+	
+	'### Reset The MAtrix
+	If _Angle <> 0.0
+		ResetMatrix()
+	Endif 
 End Function
 
 #Rem monkeydoc
@@ -502,7 +514,18 @@ Function Maniac_Color(_Color:Int)
 			
 		'### BROWN ###
 		Case 70
+			SetColor 210,180,140
+		Case 71
+			SetColor 222,184,135
+		Case 72
+			SetColor 205,133,63
+		Case 73
 			SetColor 165,42, 42
+		Case 74
+			SetColor 160,82,45
+		Case 74
+			SetColor 139,69,19
+			
 			
 		'### PURPLE +####
 		Case 80

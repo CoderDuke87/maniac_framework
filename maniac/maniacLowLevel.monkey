@@ -329,6 +329,18 @@ Function ll_convertDateToDay:Int(_Date:String)
 
 End Function 
 
+Function ll_Rotate(x:Float, y:Float, angle:Float)
+	PushMatrix				' Store current rotation, scale, etc
+	Translate x, y			' Shift origin across to here
+	Rotate angle			' Rotate around origin
+	Translate -x, -y		' Shift origin back where it was
+End
+
+' ResetDisplay: resets view back to normal...
+Function ll_Reset()
+	PopMatrix				' Restore rotation, scale, etc
+End
+
 #rem
 	The following Skew and Mirror functions are from Danilo posted on Monkey
 	http://www.monkey-x.com/Community/posts.php?topic=8066
