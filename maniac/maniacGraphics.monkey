@@ -15,6 +15,7 @@
 	0.1.2~n
 		Added: some more Green , Blue & Yellow Colors~n
 		Added ManiacImage
+		Added Drw_ManiacText
 	0.1.1~n
 		Added Lighning,Maniac_Color~n
 		~n
@@ -303,6 +304,56 @@ Function Drw_Lightning(sx#,sy#,fx#,fy#,depth=4)
 	
 	Next 
 End Function
+
+#Rem monkeydoc
+	### READY TO USE ###~n
+	Draws a wrapped Text (ManiacFontText) to the _X,_Y,_Width,_Height Container with the _AlignX & _AlignY Parameter.
+
+	This Function returns the CursorPosition in Pxl for the X-Koordinate
+	You must call this within the OnRender() Method
+	Example:
+	<pre>
+		'Within the On Render you jast call the Lightning
+		Method OnRender:Int()		
+			Cls		
+			Drw_ManiacText("Hallo",50,200,300,50,ALIGNMENT_MIDDLE)
+			Return 0
+		End
+	</pre>
+#End
+Function Drw_ManiacText:Float(_Caption:String,_X:Float,_Y:Float,_Width:Float,_Height:Float,_AlignX:Int = ALIGNMENT_MIDDLE,_AlignY:Int = ALIGNMENT_MIDDLEY)
+	Local lW:Float
+	Local lH:Float = 0
+
+	Select _AlignX
+		Case ALIGNMENT_LEFT
+			lW = 0
+			
+		Case ALIGNMENT_MIDDLE
+			Local l:Int = MANIAC_FONT.getW(_Caption)
+			lW = _Width/2-l/2
+	
+		Case ALIGNMENT_RIGHT
+			Local l:Int = MANIAC_FONT.getW(_Caption)
+			lW = _Width-l/2	
+		Default 
+			lW = 0
+	End Select
+	
+	
+	'### ToDo Include a Y Alignment System ...
+	Select _AlignY
+		Case ALIGNMENT_TOP
+		Case ALIGNMENT_MIDDLEY
+		Case ALIGNMENT_BOTTOM
+	End Select 
+	
+	MANIAC_FONT.Wrap(_Caption,_X+lW,_Y+lH,_Width,_Height,_Caption.Length())
+	
+	Local tW:Float = MANIAC_FONT.getW(_Caption)
+	Return (_X+lW+tW)
+End Function 
+
 
 Const COLOR_BLACK:Int 		= 	0
 Const COLOR_GRAY:Int		=	4
