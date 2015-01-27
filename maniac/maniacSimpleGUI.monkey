@@ -1340,6 +1340,67 @@ Class RadioElement
 End Class 
 public
 
+
+#Rem monkeydoc
+	This Class is a ImageCheckBox Gui Element.~n
+	Version 0.1~n
+	
+	>> It may be merged later on with ManiacCheckBox
+	Example:
+	<pre>
+		Global tB:ManiacButton = new ManiacButton(100,100,300,32)
+
+		Function Main:Int()
+			New Example							
+			Return 0
+		End Function  
+	</pre>
+#End
+Class ManiacImageCheckBox
+	Field imgBG:Image
+	Field imgOff:Image 
+	Field imgFrame:Image
+	
+	Field maniacID:Int 
+	Field X:Float
+	Field Y:Float
+	Field Width:Float
+	Field Height:Float
+	Field bOff:Bool = False 
+	
+	Method New(_X:Float,_Y:Float,_Width:Float,_Height:Float,_imgBG:Image = Null )
+		X 		= _X
+		Y		= _Y
+		Width 	= _Width
+		Height 	= _Height
+		imgBG = _imgBG
+	End Method 
+	
+	
+	Method Draw:Void()
+		SetColor 255,255,255
+		SetAlpha 1
+		DrawImage MANIAC_IMG_ICO_SOUND ,X ,Y ,0 , Width/MANIAC_IMG_ICO_SOUND.Width() , Height/MANIAC_IMG_ICO_SOUND.Height()
+	End Method
+	
+	Method Update:Int()
+		If TouchHit()
+			If MOBox(X,Y, Width, Height)
+				If bOff = True
+					bOff = False
+				Else
+					bOff = True
+				Endif 
+			Endif
+		Endif
+	End Method 
+	
+	Method setOff:Void(_Off:Bool)
+		bOff = _Off
+	End Method  
+End Class
+
+
 #Rem monkeydoc
 	This Class is a CheckBox Gui Element.
 	Version 0.1
