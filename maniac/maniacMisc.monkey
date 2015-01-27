@@ -130,7 +130,6 @@ End Function
 Function MOBox:Bool(_X:Float, _Y:Float, _Width:Float, _Height:float)
 	Maniac_Debug.addTotCall()
 	Maniac_Debug.addTotCalc()
-		'Maniac_Debug.addTotDraws(2)
 	Maniac_Debug.addCalc()
 	If _X < MouseX() And _X + _Width > MouseX() And _Y < MouseY() And _Y + _Height > MouseY()
 		Return True
@@ -159,6 +158,47 @@ Function MOCircle:Bool(ix:Int,iy:Int,ir:Int)
 		Return False 
 	Endif 
 End Function
+
+
+#rem monkeydoc
+	Checks, if the Mousecursor is inbetween an Triangle (x1,y1,y2,y2,y3,y3)
+#end
+Function MOTriangle:Bool(x1:Float,y1:Float,x2:Float,y2:Float,x3:Float,y3:Float) 
+
+	local b0:float =  (x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1)
+	Local b1:Float = ((x2 - MouseX()) * (y3 - y0) - (x3 - x0) * (y2 - MouseY())) / b0 
+	If b1 <= 0 Then Return False
+	
+	Local b2:Float = ((x3 - MouseX()) * (y1 - y0) - (x1 - x0) * (y3 - MouseY())) / b0
+	If b2 <= 0 Then Return False
+
+	Local b3:float = ((x1 - MouseX()) * (y2 - y0) - (x2 - x0) * (y1 - MouseY())) / b0 
+	If b3 <= 0 Then Return False
+	
+	Return True
+
+End Function
+
+
+#rem monkeydoc
+	Checks, if a Point (x0,y0) is inbetween an Triangle (x1,y1,y2,y2,y3,y3
+#end
+Function InTriangle:Bool(x0,y0,x1,y1,x2,y2,x3,y3)
+
+	local b0:float =  (x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1)
+	Local b1:float = ((x2 - x0) * (y3 - y0) - (x3 - x0) * (y2 - y0)) / b0 
+	If b1 <= 0 Then Return False
+	
+	Local b2:Float = ((x3 - x0) * (y1 - y0) - (x1 - x0) * (y3 - y0)) / b0
+	If b2 <= 0 Then Return False
+
+	Local b3:float = ((x1 - x0) * (y2 - y0) - (x2 - x0) * (y1 - y0)) / b0 
+	If b3 <= 0 Then Return False
+	
+	Return True
+
+End Function
+
 
 
 #Rem monkeydoc
