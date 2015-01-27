@@ -95,6 +95,7 @@ Import maniacTween				'667
 Import maniacMap				'168
 Import maniacWIP
 Import maniacSort
+Import maniacSpline
 
 
 
@@ -106,10 +107,18 @@ Global MANIAC_IMG_LOGO:Image
 Global MANIAC_IMG_STAR:Image
 Global MANIAC_IMG_STARBLUR:Image
 Global MANIAC_IMG_BACKGROUND:Image 
-Global MANIAC_IMG_FRAME_RAW:Image 		'
+Global MANIAC_IMG_FRAME_RAW:Image 		' ## DEPRECATED, this global will be removed in next Version
+Global MANIAC_IMG_FRAME_RECT2:Image		'
+Global MANIAC_IMG_FRAME_ROUND1:Image
+Global MANIAC_IMG_FRAME_ROUND2:Image
+Global MANIAC_IMG_FRAME_ROUND3:Image
 Global MANIAC_IMG_FRAME_BLUR:Image
 Global MANIAC_IMG_FRAME_SMOOTHRECT:Image
 Global MANIAC_IMG_FRAME_SMOOTHRECTBLUR:Image 
+Global MANIAC_IMG_BG_ROUND1:Image
+Global MANIAC_IMG_BG_ROUND2:Image
+Global MANIAC_IMG_BG_ROUND3:Image
+Global MANIAC_IMG_BG_SMOOTHRECT:Image
 Global MANIAC_IMG_SLIDERLINE:Image
 Global MANIAC_IMG_SLIDERPICKER:Image 
 Global MANIAC_IMG_EDITICON:Image
@@ -176,7 +185,16 @@ Function initManiac(_Debug:Bool = False)
 		MANIAC_IMG_BACKGROUND = LoadImage("lib/Hintergrund.png")
 		MANIAC_IMG_STAR = LoadImage("lib/star.png")
 		MANIAC_IMG_LOGO = LoadImage("lib/logo.png")
-		MANIAC_IMG_FRAME_RAW = LoadImage("lib/Frame_raw2.png",1,Image.MidHandle)
+		MANIAC_IMG_FRAME_RAW = LoadImage("lib/Button/Frame_Round3.png",1,Image.MidHandle)
+		MANIAC_IMG_FRAME_RECT2	= LoadImage("lib/Button/Frame_Rect2.png",1,Image.MidHandle)
+		MANIAC_IMG_FRAME_ROUND1	= LoadImage("lib/Button/Frame_Round1.png",1,Image.MidHandle)
+		MANIAC_IMG_FRAME_ROUND2	= LoadImage("lib/Button/Frame_Round2.png",1,Image.MidHandle)
+		MANIAC_IMG_FRAME_ROUND3 = LoadImage("lib/Button/Frame_Round3.png",1,Image.MidHandle)
+		MANIAC_IMG_BG_SMOOTHRECT = LoadImage("lib/Button/BG_Round3.png",1,Image.MidHandle)		'## DEPRECATED !!! Will be removed within next patch
+		MANIAC_IMG_BG_ROUND1 = LoadImage("lib/Button/BG_Round1.png",1,Image.MidHandle)
+		MANIAC_IMG_BG_ROUND2 = LoadImage("lib/Button/BG_Round2.png",1,Image.MidHandle)
+		MANIAC_IMG_BG_ROUND3 = LoadImage("lib/Button/BG_Round3.png",1,Image.MidHandle)
+		
 		MANIAC_IMG_FRAME_BLUR = LoadImage("lib/Frame_blur.png",1,Image.MidHandle)
 		MANIAC_IMG_EDITICON = LoadImage("lib/ico_edit.png")
 		MANIAC_IMG_SLIDERLINE = LoadImage("lib/Slider_Line.png")
