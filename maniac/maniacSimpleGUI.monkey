@@ -1,5 +1,5 @@
 #Rem monkeydoc Module maniac.maniacSimpleGUI
-	Simple GUI - Version 0.1.5 (alpha)  ~n
+	Simple GUI - Version 0.1.6 (alpha)  ~n
 	Copyright (C) 2015  Stephan Duckerschein~n
 	
 	Here You can find some GUI Elements to use for your App.
@@ -17,6 +17,7 @@
 		- Buglist:
 			ManiacButton -> Rolling Animation is not Ready yet
 	VERSION:~n
+	0.1.6	- added Sounds to Button & Dropdown
 	0.1.5	- updated Textfield Class
 				- now shows the Cursor, X-Alignment is available, set the Alpha, Wrap Textfield to Height of Text (Single Line Only at the Moment!!!!!)
 				- Bugfixed some Update and Drawing Stuff.
@@ -367,7 +368,7 @@ Class ManiacButton
 	Field MidX:Float,MidY:Float			'aktuelle Position des Buttons (Durch Animationen veränderbar
 	Field oX:Float,oY:Float 		'Original X,Y << Das ist die Feste Position des Buttons
 	Field Width:Float,Height:Float			'Breite und Höhe in Pxl
-	
+	Field oWidth:Float,oHeight:Float
 	'
 	Field Caption:String		'Aufschrift
 	Field CaptionColor:Int		'Color of the Caption
@@ -375,6 +376,7 @@ Class ManiacButton
 	Field Alignment:Int			'ausrichtung des Textes (Left,Middle,Right)
 	Field bTransparent:Bool = false 
 	Field bVisible:Bool 	= True 
+	Field bSound:Bool 		= True 
 	
 	'#### EFFECTS STUFF ####
 	'Field 
@@ -448,6 +450,8 @@ Class ManiacButton
 		MidY 	= _MidY
 		Width 	= _Width
 		Height 	= _Height
+		oWidth 	= _Width
+		oHeight = _Height
 		Alignment =_Alignment
 		Caption =	_Caption
 		CaptionColor = _Color +6
@@ -649,6 +653,12 @@ Class ManiacButton
 					
 					MidX = tweenX.Value()
 					MidY = tweenY.Value()
+					
+				Case ANIM_POPOUT
+					tweenX.Update()
+					tweenY.Update()
+					setSize(tweenX.Value(),tweenY.Value())
+					
 			End Select 
 			
 			
@@ -662,6 +672,9 @@ Class ManiacButton
 				doWobble()
 			Endif 
 			If TouchHit()
+				If GLOBAL_SOUNDON = True And bSound = True 
+					PlaySound(MANIAC_SND_SLIDE3)
+				Endif
 				Return 99
 			Endif 
 			Return 101
@@ -720,9 +733,18 @@ Class ManiacButton
 	End Method 
 	
 	
-	Method startAnimPopOut()
-	
+	Method startAnimPopOut(_AnimTime:Int = 1500,_Style:String = "Back",_Ease:String = "Out")
+		tweenX = ll_Tween(_Style,_Ease,0,oWidth,_AnimTime )
+		tweenX.Start()
+		tweenY = ll_Tween(_Style,_Ease,0,oHeight,_AnimTime )
+		tweenY.Start()
+		bRunningAnimation = True 
+		AnimStartTime = Millisecs()
+		AnimTime = _AnimTime
+		AnimEffect = ANIM_POPOUT
 	End Method 
+	
+	
 	Method setAlignment(_Alignment:Int)
 	
 		'Checking for using right Alignment Convention, else set to ALIGNMENT_MIDDLE
@@ -875,6 +897,11 @@ Class ManiacButton
 	#end 
 	Method setStyle:Void(_Style:Int)
 		ButtonStyle = _Style
+	End Method 
+	
+	
+	Method setSound:Void(_Bool:Bool)
+		bSound = _Bool
 	End Method 
 End Class 
 
@@ -1417,11 +1444,13 @@ Class ManiacDropDown
 	Field showCloseHeader:Int 	= 2
 	Field bCloseOnSelected:Bool = True 
 	
-	Field ShowLines:Int 	= 4
+	Field ShowLines:Int 	= 5
 	Field ScrolledLines:Int = 0
 	Field listTextElements:List<textElement>
 	Field MOElement:Int 
 	Field SelectedElement:Int = 0
+	
+	Field bSound:Bool = True 
 	
 	Field tweenY:Tween
 	
@@ -1503,6 +1532,9 @@ Class ManiacDropDown
 				bOpened = False
 			Else
 				bOpened = True
+				If GLOBAL_SOUNDON = True And bSound = True 
+					PlaySound(MANIAC_SND_SLIDE3)
+				Endif 
 			Endif 
 		Endif
 		Endif 
