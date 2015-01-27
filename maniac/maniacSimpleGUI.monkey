@@ -337,10 +337,17 @@ Const ANIM_SLIDE:Int 	= 5
 Const ANIM_CIRCLE:Int	= 6
 Const ANIM_POPOUT:Int 	= 7
 
+Const BUTTON_STYLE_RECTSTD:Int = 0
+Const BUTTON_STYLE_RECT2:Int 	= 1
+Const BUTTON_STYLE_ROUND1:Int 	= 2
+Const BUTTON_STYLE_ROUND2:Int 	= 3
+Const BUTTON_STYLE_ROUND3:Int 	= 3
 
 #Rem monkeydoc
 	This Class is a Button Gui Element.
-	Version 0.1
+	Version 0.2~n
+		- added ButtonStyle
+		
 	Example:
 	<pre>
 		Global tB:ManiacButton = new ManiacButton(100,100,300,32)
@@ -390,6 +397,7 @@ Class ManiacButton
 	Field FrameType:Int 	= 0
 	Field FrameThickness:Int = 1
 	
+	Field ButtonStyle:Int = 0
 	Field Color:Int 							'Integerwert einer Farbe aus der Maniac_Color Funktion
 	
 	'#### BUTTON MOUSEOVER STUFF #####
@@ -504,20 +512,44 @@ Class ManiacButton
 				AddHeightByMO = 0
 			Endif 
 		Endif 
-		DrawRect(MidX- (Width +AddWidthByMO/2)/2,MidY-(Height+AddHeightByMO/2)/2,Width+AddWidthByMO,Height+AddHeightByMO)
-		Maniac_Debug.addTotDraws(1)
+		'
+		'Check for Button Style
+		Select ButtonStyle
+			Case BUTTON_STYLE_RECTSTD
+				DrawRect(MidX- (Width +AddWidthByMO/2)/2,MidY-(Height+AddHeightByMO/2)/2,Width+AddWidthByMO,Height+AddHeightByMO)
+			Case BUTTON_STYLE_RECT2
+				'DrawImage MANIAC_IMG_BG_SMOOTHRECT, MidX,MidY,0,(Width+AddWidthByMO)/MANIAC_IMG_BG_SMOOTHRECT.Width(),(Height+AddHeightByMO)/MANIAC_IMG_BG_SMOOTHRECT.Height()
+			Case BUTTON_STYLE_ROUND1
+				DrawImage MANIAC_IMG_BG_ROUND1, MidX,MidY,0,(Width+AddWidthByMO)/MANIAC_IMG_BG_SMOOTHRECT.Width(),(Height+AddHeightByMO)/MANIAC_IMG_BG_SMOOTHRECT.Height()
+			Case BUTTON_STYLE_ROUND2
+				DrawImage MANIAC_IMG_BG_ROUND2, MidX,MidY,0,(Width+AddWidthByMO)/MANIAC_IMG_BG_SMOOTHRECT.Width(),(Height+AddHeightByMO)/MANIAC_IMG_BG_SMOOTHRECT.Height()
+			Case BUTTON_STYLE_ROUND3
+				DrawImage MANIAC_IMG_BG_ROUND3, MidX,MidY,0,(Width+AddWidthByMO)/MANIAC_IMG_BG_SMOOTHRECT.Width(),(Height+AddHeightByMO)/MANIAC_IMG_BG_SMOOTHRECT.Height()
+		End Select 
+		'Maniac_Debug.addTotDraws(1)
 		
 		
 		'###### BUTTON FRAME ########
 		If bFramed = True
-			If FrameType = 0	
-				Maniac_Color(FrameColor)
-				DrawImage MANIAC_IMG_FRAME_RAW , MidX,MidY,0,(Width+AddWidthByMO)/MANIAC_IMG_FRAME_RAW.Width(),(Height+AddHeightByMO)/MANIAC_IMG_FRAME_RAW.Height()
-				Maniac_Debug.addTotDraws(1)
-			Elseif FrameType = 1
-				Maniac_Color(FrameColor)
-				Drw_Rect(MidX-Width/2+AddWidthByMO,MidY-Height/2,Width,Height,FrameThickness)
-			Endif 
+			Select ButtonStyle
+				Case BUTTON_STYLE_RECTSTD
+					Maniac_Color(FrameColor)
+					Drw_Rect(MidX- (Width +AddWidthByMO/2)/2,MidY-(Height+AddHeightByMO/2)/2,Width+AddWidthByMO,Height+AddHeightByMO,3)
+				Case BUTTON_STYLE_RECT2
+					Maniac_Color(FrameColor)
+					DrawImage MANIAC_IMG_FRAME_RECT2 , MidX,MidY,0,(Width+AddWidthByMO)/MANIAC_IMG_FRAME_RAW.Width(),(Height+AddHeightByMO)/MANIAC_IMG_FRAME_RAW.Height()
+				Case BUTTON_STYLE_ROUND1
+					Maniac_Color(FrameColor)
+					DrawImage MANIAC_IMG_FRAME_ROUND1 , MidX,MidY,0,(Width+AddWidthByMO)/MANIAC_IMG_FRAME_RAW.Width(),(Height+AddHeightByMO)/MANIAC_IMG_FRAME_RAW.Height()
+				Case BUTTON_STYLE_ROUND2
+					Maniac_Color(FrameColor)
+					DrawImage MANIAC_IMG_FRAME_ROUND2 , MidX,MidY,0,(Width+AddWidthByMO)/MANIAC_IMG_FRAME_RAW.Width(),(Height+AddHeightByMO)/MANIAC_IMG_FRAME_RAW.Height()
+				Case BUTTON_STYLE_ROUND3
+					Maniac_Color(FrameColor)
+					DrawImage MANIAC_IMG_FRAME_ROUND3 , MidX,MidY,0,(Width+AddWidthByMO)/MANIAC_IMG_FRAME_RAW.Width(),(Height+AddHeightByMO)/MANIAC_IMG_FRAME_RAW.Height()
+
+			End Select
+			 
 		Else
 		
 		Endif 
@@ -830,6 +862,19 @@ Class ManiacButton
 	
 	Method setVisible(_Bool:Bool)
 		bVisible = _Bool
+	End Method 
+	
+	
+	#rem monkeydoc
+		Style can be one of the following Const Int:~n
+		const BUTTON_STYLE_RECTSTD:Int 	= 0~n
+		Const BUTTON_STYLE_RECT2:Int 	= 1~n
+		Const BUTTON_STYLE_ROUND1:Int 	= 2~n
+		Const BUTTON_STYLE_ROUND2:Int 	= 3~n
+		Const BUTTON_STYLE_ROUND3:int   = 4~n
+	#end 
+	Method setStyle:Void(_Style:Int)
+		ButtonStyle = _Style
 	End Method 
 End Class 
 
@@ -1174,9 +1219,9 @@ Class ManiacRadioGroup
 	End Method
 	
 	Method Draw()
-    For Local oRE:RadioElement = Eachin listElements
-      oRE.Draw()
-    Next 
+    	For Local oRE:RadioElement = Eachin listElements
+     		oRE.Draw()
+    	Next 
 	End Method 
 	
 	Method addChoice(_Caption:String,_Value:Int)
@@ -1243,7 +1288,7 @@ Class RadioElement
 	
 	Method Draw()
     	'Drawing the Selectable Circle
-    	Drw_Ellipsis( X, Y, Width, Height)
+    	'Drw_Ellipsis( X, Y, Width, Height)
 	End Method 
 	
 	Method setPosition(_X:Float, _Y:Float, _Width:Float,_Height:Float)
