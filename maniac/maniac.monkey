@@ -94,6 +94,7 @@ Import maniacSimpleGUI			'1214		1515
 Import maniacTween				'667
 Import maniacMap				'168
 Import maniacWIP
+Import maniacSort
 
 
 
