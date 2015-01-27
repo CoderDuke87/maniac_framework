@@ -125,8 +125,14 @@ Global MANIAC_IMG_EDITICON:Image
 Global MANIAC_IMG_CHECK:Image 
 Global MANIAC_IMG_DROPDOWN:Image
 Global MANIAC_IMG_ARROWDOWN:Image
+
+Global MANIAC_IMG_ICO_SOUND:Image
+Global MANIAC_IMG_ICO_SOUND2:Image
 Global MANIAC_CHARACTERSCOUNT:Int = 30
-	
+
+Global MANIAC_SND_SLIDE:Sound 
+Global MANIAC_SND_SLIDE2:Sound
+Global MANIAC_SND_SLIDE3:Sound
 #rem
 	Here are the Paths to the Included Images for this Framework
 	At the moment theyre not used.
@@ -168,6 +174,8 @@ Global MANIAC_LOADASYNC:Bool = False 		'## RECOMMEND: SET ON FALSE, as there is 
 
 Global maniac_lastTime:Int 
 Global maniac_timeScale:Float 
+
+Global GLOBAL_SOUNDON:Bool = false 			'if set to false, No Sound at all
 	
 #Rem monkeydoc
 	This Function Inits this Module.
@@ -202,6 +210,13 @@ Function initManiac(_Debug:Bool = False)
 		MANIAC_IMG_CHECK = LoadImage("lib/ico_check.png")
 		MANIAC_IMG_DROPDOWN = LoadImage("lib/ico_dropdown.png")
 		MANIAC_IMG_ARROWDOWN = LoadImage("lib/ico_arrowdown.png")
+		
+		MANIAC_IMG_ICO_SOUND = LoadImage("lib/Icons/Icon_Std_Sound.png")
+		
+		MANIAC_SND_SLIDE = LoadSound("lib/SFX/slide1.wav")
+		MANIAC_SND_SLIDE2 = LoadSound("lib/SFX/slide2.wav")
+		MANIAC_SND_SLIDE3 = LoadSound("lib/SFX/slide3.wav")
+		
 	Else
 		#rem
 			TO DO:
