@@ -10,6 +10,7 @@
 
 Import mojo
 Import maniacDebug
+Import maniacString
 #If (TARGET <> "html5") And (TARGET <> "flash")
 	Import brl.FileSystem
 #Endif
@@ -42,7 +43,7 @@ Function Array2D:Int[][] (i:Int, j:Int,fill:Int = 0)
 End
 
 #Rem monkeydoc
-	This function creates a new 2 Dimensional Int Array with i and j dimensions.
+	This function creates a new 2 Dimensional String Array with i and j dimensions.
 	optionaly You can add a initial Value fill. Standard fill value will then be 0.
 	
 	<pre>
@@ -67,8 +68,10 @@ Function Array2Dstr:String[][] (i:Int, j:Int,fill:String = "")
     Next 
     Return arr		
 End
+
+
 #Rem monkeydoc
-	This function creates a new 2 Dimensional Int Array with i and j dimensions.
+	This function creates a new 2 Dimensional maniacField Array with i and j dimensions.
 	optionaly You can add a initial Value fill. Standard fill value will then be 0.
 	
 	<pre>
@@ -88,6 +91,8 @@ Function Array2Dmf:ManiacField[][] (i:Int, j:Int)
     
     Return arr		
 End
+
+
 #rem
 Function Array3D:Int[][][] (i:Int, j:Int,k:int,fill:Int = 0)
     Local arr:Int[][][] = New Int[i][][]
@@ -113,12 +118,14 @@ End
 	It uses the built-in Updating System.
 	
 	if you want to Move like 200 Pixel in 1 Second, you call
-	EqToFPS(PixelPerSecond)
+	EqToFPS(200)
 #End
-Function EqToFPS:Float(unitsPerSecond:Float) 
-	Maniac_Debug.addCalc()
-  'Convert the given units-per-second value to units-per-frame
-  Return unitsPerSecond * maniac_timeScale
+Function EqToFPS:Float(unitsPerSecond:Float)
+	If MANIAC_DEBUG = True 
+		Maniac_Debug.addCalc()
+	Endif 
+  	'Convert the given units-per-second value to units-per-frame
+  	Return unitsPerSecond * maniac_timeScale
 End Function
 
 
@@ -199,6 +206,14 @@ Function InTriangle:Bool(x0,y0,x1,y1,x2,y2,x3,y3)
 
 End Function
 
+
+Function InterpolateAngle:Float(a:Float,b:Float,blend:Float = 0.5)
+	Local ix# = Sin(a)
+	Local iy# = Cos(a)
+	Local jx# = Sin(b)
+	Local jy# = Cos(b)
+	Return ATan2(ix-(ix-jx)*blend,iy-(iy-jy)*blend)
+End Function
 
 
 #Rem monkeydoc
@@ -324,6 +339,86 @@ Function GetFolderFiles2:List<String>(_Path:String)
 	Return list
 End Function 
 
+#rem
+; Returns a string with the Roman numerals for value v
+; This will Not be accurate for numbers > 3999 as the number
+; 5000 should be represented as an M with a line above it etc, however as we
+; do not have such a character I have used N, O, P.. etc for larger numbers, but see printroman...
+#end 
+
+Function roman:String(v:Int )
+	Local r:String="IVXLCDMNPQRSTUWYZ"
+	Local n:String = v 
+	Local i:Int = n.Length()*2 - 1
+	Local rom:String 
+	For Local x:Int = 1 To n.Length()
+		Local d:Int = StrToInt(Mid(n,x,1))
+		Select d
+			Case 1
+				'rom = rom + String( Mid(r ,i,1),d )
+				'Print "j"
+				rom = rom + "I"
+			Case 2
+				'rom = rom +String (Mid (r ,i,1),d)
+				rom = rom + "II"
+			Case 3
+				'rom = rom +String (Mid (r ,i,1),d)
+				rom = rom + "III"
+				
+			Case 4		
+				rom = rom + Mid(r,i,1) + Mid(r,i+1,1)
+			Case 5		; rom = rom+Mid(r,i+1,1)
+			Case 6,7,8	; rom = rom+Mid(r,i+1,1)+ (Mid (r,i,1))
+			Case 9		; rom = rom+Mid(r,i,1)+Mid(r,i+2,1)
+			
+		End Select
+		i=i-2
+	Next
+	Return rom
+End Function
+
+
+Function ConvertFloatToString:String(ifloat:Float,ilength:Int,ibconv:Bool = False)
+	  
+	Local bSuffix:Int = 0
+	Local nf:Float = (ifloat / 1000.0)
+	If nf < 1001
+		bSuffix = 1
+	Else 
+		bSuffix = 2
+		nf = nf/1000
+		If (nf/1000) < 1000
+			bSuffix = 3
+		Endif 
+	Endif 
+	Local str:String = nf
+
+	Local arr:Int[] = str.ToChars()
+
+	Local number:String 
+	Local npos:Int = 0
+	For Local pos:Int = 0 To arr.Length()-1
+	
+		Local char:String = String.FromChar(arr[pos])
+		
+		If npos <= ilength
+			number += char
+		Endif 
+		 
+		npos +=1
+	Next 
+	Select bSuffix
+		Case 0
+		Case 1
+			number += " k"
+		Case 2
+			number += " M"
+		Case 3
+			number += " G"
+	End Select 
+	Return number 
+End Function
+
 Class ManiacTextFile
 
 	Field filecontent:String
@@ -399,3 +494,8 @@ Class ManiacTextFile
 
 
 End Class
+
+
+
+
+

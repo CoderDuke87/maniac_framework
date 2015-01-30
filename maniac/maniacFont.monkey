@@ -101,6 +101,10 @@ Class ManiacFont
     function getH:Float()
     	Return 27
     End Function  
+    
+    Function getH2:Float()
+    	Return height
+    End Function 
 
 	#Rem monkeydoc
 		This Method fits the Text to the given Container Dimensions.

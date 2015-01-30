@@ -14,6 +14,7 @@
 	0.1.3~n
 		Added some Browns
 		Drw_Rect is now rotateable
+		completed Drw_ManiacText with Width & Height Alignment
 	
 	0.1.2~n
 		Added: some more Green , Blue & Yellow Colors~n
@@ -132,6 +133,61 @@ Function Drw_Ellipsis( posx:Float, posy:Float, width:Float, height:Float)
 	Wend
 End Function 
 
+
+#Rem monkeydoc
+	### READY TO USE ###~n
+	This Function Draws a outlining Circle at _X,_Y (Middle) with the radius _Radius.
+	You must call this within the OnRender() Method
+#End
+Function Drw_Circle( posx:Float, posy:Float, _Radius:Float)
+	
+   	Local x:Float 
+   	Local y:Float 
+   	Local rx:Float = _Radius / 2
+   	Local ry:Float = _Radius / 2
+
+   	Local r:Int = Abs(rx) + Abs(ry)
+
+   	x = 0
+   	y = r
+   
+   	Local d:Int 
+   	Local ddf_x:Int 
+   	Local ddf_y:Int 
+   
+   	d = 1 - r
+   	ddf_x = 3
+	ddf_y = -2 * r + 5
+   
+   	While y >= x And r
+		If MANIAC_DEBUG = True
+			Maniac_Debug.addTotDraws(8)
+		endif
+	    DrawPoint( posx + x * rx/r, posy + y * ry/r )
+	    DrawPoint( posx + y * rx/r, posy + x * ry/r )
+	    DrawPoint( posx + y * rx/r, posy - x * ry/r )
+	    DrawPoint( posx + x * rx/r, posy - y * ry/r )
+	    DrawPoint( posx - x * rx/r, posy - y * ry/r )
+	    DrawPoint( posx - y * rx/r, posy - x * ry/r )
+	    DrawPoint( posx - y * rx/r, posy + x * ry/r )
+	    DrawPoint( posx - x * rx/r, posy + y * ry/r )
+	       
+	    If d < 0
+	       d= d + ddf_x
+	       ddf_x= ddf_x+ 2
+	       ddf_y=ddf_y+ 2
+	       x=x + 1
+	    Else
+	       d= d+ ddf_y
+	       ddf_x=ddf_x+ 2
+	       ddf_y=ddf_y+ 4
+	       x=x+ 1
+	       y=y- 1  
+	    EndIf
+	Wend
+End Function 
+
+
 #Rem monkeydoc
 	### READY TO USE ###~n
 	This Function Draws a Grid at the Position _X,_Y with the Dimensions _Witdth and _Height and the number of cells in x and y direction
@@ -238,6 +294,7 @@ End Function
 	Draw 2d Lightning.
 	Pass the starting and ending points.  Depth parameters refers to recursion.  Don't want to blow the stack!
 	
+	It uses CPU HEAVILY!!! best for short use for some effects. or lower the recursion.
 	You must call this within the OnRender() Method
 	Example:
 	<pre>
@@ -336,7 +393,9 @@ End Function
 Function Drw_ManiacText:Float(_Caption:String,_X:Float,_Y:Float,_Width:Float,_Height:Float,_AlignX:Int = ALIGNMENT_MIDDLE,_AlignY:Int = ALIGNMENT_MIDDLEY)
 	Local lW:Float
 	Local lH:Float = 0
-
+	If MANIAC_DEBUG = True
+		Maniac_Debug.addTotDraws(1)
+	endif
 	Select _AlignX
 		Case ALIGNMENT_LEFT
 			lW = 0
@@ -356,8 +415,12 @@ Function Drw_ManiacText:Float(_Caption:String,_X:Float,_Y:Float,_Width:Float,_He
 	'### ToDo Include a Y Alignment System ...
 	Select _AlignY
 		Case ALIGNMENT_TOP
+			lH = 0
 		Case ALIGNMENT_MIDDLEY
+			lH = _Height/2-MANIAC_FONT.getH()/2
 		Case ALIGNMENT_BOTTOM
+			lH = _Height-MANIAC_FONT.getH()
+		
 	End Select 
 	
 	MANIAC_FONT.Wrap(_Caption,_X+lW,_Y+lH,_Width,_Height,_Caption.Length())

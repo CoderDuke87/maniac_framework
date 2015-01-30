@@ -26,10 +26,12 @@ Class Maniac_Debug
 	Global registeredGraphics:Int 	= 0			'Shows the number of all Loaded Graphics like Png,Jpg & co
 	Global registeredSounds:Int		= 0
 	
+	'### ALLOCATED MEMORY ###
 	Global storedBools:Int			= 0
 	Global storedInts:Int			= 0
 	Global storedFloats:Int			= 0
 	Global storedStrings:Int		= 0
+	Global storedImages:Int			= 0
 	
 	Global totCALLS:Int				= 0
 	Global totDRAWS:Int				= 0
@@ -47,6 +49,10 @@ Class Maniac_Debug
 	Function addStoredStrings:Void(_Number:Int = 1)
 		storedStrings +=_Number
 	End Function
+	Function addStoredImages:Void(_Number:Int = 1)
+		storedImages +=_Number
+	End Function
+	
 	Function addTotCall:Void(_Number:Int = 1)
 		totCALLS +=_Number
 	End Function 
@@ -208,17 +214,20 @@ Class Maniac_Debug
 		EndIf
 		
 		SetColor 255, 255, 255
-		DrawText(curFPS + " fps   | " + Int(payloadCPU)+ " % CPU | " + avgCALC+" Calcs/s   | " + avgDRAW+" Draws/s ", 2, 0)
+		DrawText(curFPS + " fps   | " + Int(payloadCPU)+ " % CPU | " + avgCALC+" Calcs/s   | " + ConvertFloatToString(avgDRAW,3,false)+" Draws/s ", 2, 0)
 		' put the next at the far end
-		DrawText(curFPS + " fps   | " + avgROPS+" rops   | tot Rendered Objects: " + totRenderedObjects, 5, 80)
+		'DrawText(curFPS + " fps   | " + avgROPS+" rops   | tot Rendered Objects: " + totRenderedObjects, 5, 80)
 		
-		DrawText("STATIC DATA    Stored: Bools: "+storedBools + " , Ints: " + storedInts + " , Floats: " + storedFloats,5,100)
-		DrawText("Registered Objects: " + registeredObjects + " , Images: " +registeredGraphics + " , Sounds: " + registeredSounds + "  || In Total: Calls: " + totCALLS + " , Draws: " + totDRAWS + " | Calc: " + totCALCS ,5,115)
+		DrawText("STATIC DATA  Stored: Bools: "+storedBools + ", Ints: " + storedInts + ", Floats: " + storedFloats + ", Strings: " + storedStrings,5,80)
+		DrawText("maniac Objects: " + registeredObjects + ", Images: " +registeredGraphics + ", Sounds: " + registeredSounds  ,5,95)
 		
-		DrawText("DYNAMIC STATS",5,130)
+		DrawText("DYNAMIC STATS",5,115)
+		ConvertFloatToString(totDRAWS,4,false)
+		DrawText("Total: Draws: " + ConvertFloatToString(totDRAWS,4,false) + ", Calls: " + totCALLS + ", Calculations: " + totCALCS ,5,130)
 		DrawText("Usage Drawing: " + DrawTimePerSecond + " ms/s , Updating: " + UpdateTimePerSecond ,5,155)
-		DrawText("CPU Payload: " + payloadCPU + " %",5,160)
-		DrawText("Avg Calc per Second " + avgCALC + " %",5,175)
+		'+ "  || In Total: Calls: " + totCALLS + " , Draws: " + totDRAWS + " | Calc: " + totCALCS
+		'DrawText("CPU Payload: " + payloadCPU + " %",5,160)
+		'DrawText("Avg Calc per Second " + avgCALC + " %",5,175)
 		
 		Local xOffset:Int = 1
 		Local lastFPS:Int = 0

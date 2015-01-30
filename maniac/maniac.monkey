@@ -1,5 +1,6 @@
 #Rem monkeydoc Module maniac
 	Copyright (C) 2015  Stephan Duckerschein~n
+	Version: 0.9 Alpha
 	This Framework provides many additional Graphical Effects and primite Drawings, like unfilled rectangular , ellipsis etc. Diverse GUI Elements.~n
 	It has it's own TileMap Engine included and even a Debug Tracking-System. ~n
 	~n
@@ -84,18 +85,17 @@ Featurelist:
 #rem
 	Importing the Module-Parts of the maniac Framework.
 #end 					
-
 Import maniacLowLevel			'325		364
 Import maniacFont				'249
-'Import maniacDebug				'334
-Import maniacGraphics			'686		763
-Import maniacMisc				'248
-Import maniacSimpleGUI			'1214		1515
-Import maniacTween				'667
-Import maniacMap				'168
-Import maniacWIP
-Import maniacSort
-Import maniacSpline
+Import maniacDebug				'334
+Import maniacGraphics			'686		835
+Import maniacMisc				'248		451
+Import maniacSimpleGUI			'1214		2065
+Import maniacTween				'667		656
+Import maniacMap				'168		168
+Import maniacWIP				'---		578
+Import maniacSort				'---		336
+Import maniacSpline				'---		 87
 
 
 
@@ -128,6 +128,7 @@ Global MANIAC_IMG_ARROWDOWN:Image
 
 Global MANIAC_IMG_ICO_SOUND:Image
 Global MANIAC_IMG_ICO_SOUND2:Image
+Global MANIAC_IMG_ICO_BACK:Image
 Global MANIAC_CHARACTERSCOUNT:Int = 30
 
 Global MANIAC_SND_SLIDE:Sound 
@@ -212,7 +213,7 @@ Function initManiac(_Debug:Bool = False)
 		MANIAC_IMG_ARROWDOWN = LoadImage("lib/ico_arrowdown.png")
 		
 		MANIAC_IMG_ICO_SOUND = LoadImage("lib/Icons/Icon_Std_Sound.png")
-		
+		MANIAC_IMG_ICO_BACK = LoadImage("lib/Icons/Icon_Std_Back.png")
 		MANIAC_SND_SLIDE = LoadSound("lib/SFX/slide1.wav")
 		MANIAC_SND_SLIDE2 = LoadSound("lib/SFX/slide2.wav")
 		MANIAC_SND_SLIDE3 = LoadSound("lib/SFX/slide3.wav")
@@ -227,7 +228,7 @@ Function initManiac(_Debug:Bool = False)
 	
 	
 	If MANIAC_DEBUG = True 
-		MANIAC_FPSGRAPH = New Maniac_Debug(DW*0.2,DH*0.8,DW*0.65,DH*0.19)
+		MANIAC_FPSGRAPH = New Maniac_Debug(DW*0.1,DH*0.7,DW*0.8,DH*0.29)
 	Endif 
 	If MANIAC_FONT = Null
 		Print "Found no Font Data"
@@ -253,7 +254,7 @@ Function initManiac(_Debug:Bool = False)
 End Function 
 
 #Rem monkeydoc
-	This Function should called on every Update() MEthod within your App.
+	This Function should called on every Update() Method within your App.
 	It keeps some important states of the ManiacModule active
 #End
 Function maniacUpdate()
@@ -271,8 +272,18 @@ Function maniacUpdate()
 End Function 
 
 
+
+
 Function maniacSetDebug(b:Bool = True)
 	MANIAC_DEBUG = b
+End Function 
+
+Function maniacSwitchDebug()
+	If MANIAC_DEBUG = True
+		MANIAC_DEBUG = False
+	Else
+		MANIAC_DEBUG = true
+	Endif 
 End Function 
 
 Function maniacSetAsyncLoad(b:Bool = True)

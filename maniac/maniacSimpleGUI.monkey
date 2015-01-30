@@ -5,6 +5,8 @@
 	Here You can find some GUI Elements to use for your App.
 	They can be used 'ad-hoc'-like. the have to be managed by the Programmer.
 	
+	## STILL WORK IN PROGRSS ##
+	
 #End
 
 #rem
@@ -15,9 +17,11 @@
 		- need Graphics Update
 		
 		- Buglist:
-			ManiacButton -> Rolling Animation is not Ready yet
+			x (DONE, Bug fixed at 28.1.2015) ManiacButton -> Rolling Animation is not Ready yet
 	VERSION:~n
 	0.1.6	- added Sounds to Button & Dropdown
+			- update Slider (Now has 2 Styles)
+			
 	0.1.5	- updated Textfield Class
 				- now shows the Cursor, X-Alignment is available, set the Alpha, Wrap Textfield to Height of Text (Single Line Only at the Moment!!!!!)
 				- Bugfixed some Update and Drawing Stuff.
@@ -40,9 +44,8 @@
 		 x Checkbox
 		 x GalleryViewer
 		 x DropDown
-		RadioBox
-		Docker
-		Tabs
+		 x RadioBox
+		 x Tabs
 		
 		
 	Implemented Feature: GUI
@@ -60,8 +63,7 @@ Const TEXTFIELD_STYLE_STD:Int 			= 0
 Const TEXTFIELD_STYLE_WITHBUTTON:Int 	= 1
 
 #Rem monkeydoc
-	This Class is a Textfield Gui Element.
-	Version 1.1
+	This Class is a Textfield Gui Element.~n
 	
 	Example:
 	<pre>
@@ -104,8 +106,10 @@ Class ManiacTextfield
 	Public 
 	Method New(_X:Float,_Y:Float,_Width:Float,_Height:Float,_Caption:String = "",_Style:Int = TEXTFIELD_STYLE_STD)
 		If MANIAC_DEBUG = True
-			Maniac_Debug.addStoredBools()
-			Maniac_Debug.addStoredInts(8)
+			Maniac_Debug.addStoredBools(5)
+			Maniac_Debug.addStoredInts(12)
+			Maniac_Debug.addStoredFloats(1)
+			Maniac_Debug.addStoredStrings(2)
 			maniacID = Maniac_Debug.getNumberOfRegisteredObjects()
 			Maniac_Debug.addRegisteredObject()
 		Endif 
@@ -272,7 +276,7 @@ Class ManiacTextfield
 	
 	#rem
 		This Method is deprecatded.
-		It will be deleted in ver 1.1
+		It will be deleted in ver 1.0
 	#end
 	Method drawFull()
 		SetAlpha 1
@@ -299,26 +303,44 @@ Class ManiacTextfield
 	End Method 
 	
 	Method getText:String()
+		If MANIAC_DEBUG = True
+			Maniac_Debug.addTotCall()
+		Endif
 		Return inputString
 	End Method 
 	
 	Method setText(itext:String)
+		If MANIAC_DEBUG = True
+			Maniac_Debug.addTotCall()
+		Endif
 		inputString = itext
 	End Method 
 	
 	Method setAlpha(_Value:Float)
+		If MANIAC_DEBUG = True
+			Maniac_Debug.addTotCall()
+		Endif
 		Alpha = _Value
 	End Method 
 	
 	Method setWrapHeight(_Bool:Bool = True)
+		If MANIAC_DEBUG = True
+			Maniac_Debug.addTotCall()
+		Endif
 		bWrapHeight = _Bool
 	End Method 
 	
 	Method setBackgroundColor:Void(_Color:Int)
+		If MANIAC_DEBUG = True
+			Maniac_Debug.addTotCall()
+		Endif
 		ColorBackground = _Color
 	End Method 
 	
 	Method setCaption(_Text:String)
+		If MANIAC_DEBUG = True
+			Maniac_Debug.addTotCall()
+		Endif
 		Caption = _Text
 	End Method 
 End Class
@@ -345,9 +367,10 @@ Const BUTTON_STYLE_ROUND2:Int 	= 3
 Const BUTTON_STYLE_ROUND3:Int 	= 3
 
 #Rem monkeydoc
-	This Class is a Button Gui Element.
-	Version 0.2~n
-		- added ButtonStyle
+	This Class is a Button Gui Element.~n
+	~n
+	Featurelist:~n
+		- Introanimations, MouseOverEffects, OnClickAnimations, 5 Different Styles, GlowEffect~n
 		
 	Example:
 	<pre>
@@ -377,7 +400,7 @@ Class ManiacButton
 	Field bTransparent:Bool = false 
 	Field bVisible:Bool 	= True 
 	Field bSound:Bool 		= True 
-	
+	Field bWithImage:Bool 	= False 
 	'#### EFFECTS STUFF ####
 	'Field 
 	
@@ -437,13 +460,17 @@ Class ManiacButton
 	
 	Public
 	Method New(_MidX:Float,_MidY:Float,_Width:Float,_Height:Float,_Caption:String = "",_Alignment:Int = ALIGNMENT_MIDDLE,_Color:Int = COLOR_BLUE,_Glow:Bool = True,_GlowHertz:Float = 1,_Angle:Float = 0.0)
+		#rem
+			Some Debug Stuff. it only will
+		#end	
 		If MANIAC_DEBUG = True
-			Maniac_Debug.addStoredBools(9)
-			Maniac_Debug.addStoredInts(12)
-			Maniac_Debug.addStoredFloats(13)
-			ID 		= Maniac_Debug.getNumberOfRegisteredObjects()
+			Maniac_Debug.addStoredBools(12)
+			Maniac_Debug.addStoredInts(20)
+			Maniac_Debug.addStoredFloats(15)
+			maniacID = Maniac_Debug.getNumberOfRegisteredObjects()
 			Maniac_Debug.addRegisteredObject()
 		Endif 
+		
 		oX 		= _MidX
 		oY		= _MidY
 		MidX 	= _MidX
@@ -463,11 +490,8 @@ Class ManiacButton
 		FrameColor = _Color +6
 	End Method 
 	
-	Method Draw:int()
-		If MANIAC_DEBUG = True
-			Maniac_Debug.addRenderedObject()
-		Endif  
-		
+	Method Draw:Int()		
+		Local draws:Int = 0
 		If bVisible = False
 			Return -1
 		Endif 
@@ -481,7 +505,8 @@ Class ManiacButton
 			Maniac_Color(GlowColor)
 			SetAlpha GlowAlpha
 			DrawImage MANIAC_IMG_FRAME_BLUR, MidX,MidY,0,Width*GlowRangeRatioX/MANIAC_IMG_FRAME_BLUR.Width(),Height*GlowRangeRatioY/MANIAC_IMG_FRAME_BLUR.Height()
-			Maniac_Debug.addTotDraws(1)
+			'Maniac_Debug.addTotDraws(1)
+			draws += 1
 		End If
 		
 		'##### BUTTON BACKGROUND #####
@@ -520,15 +545,23 @@ Class ManiacButton
 		'Check for Button Style
 		Select ButtonStyle
 			Case BUTTON_STYLE_RECTSTD
-				DrawRect(MidX- (Width +AddWidthByMO/2)/2,MidY-(Height+AddHeightByMO/2)/2,Width+AddWidthByMO,Height+AddHeightByMO)
+				If bWithImage = False 
+					DrawRect(MidX- (Width +AddWidthByMO/2)/2,MidY-(Height+AddHeightByMO/2)/2,Width+AddWidthByMO,Height+AddHeightByMO)
+				Else 
+					DrawImage MANIAC_IMG_BACKGROUND, MidX- (Width +AddWidthByMO/2)/2,MidY-(Height+AddHeightByMO/2)/2,0,(Width+AddWidthByMO)/MANIAC_IMG_BACKGROUND.Width(),(Height+AddHeightByMO)/MANIAC_IMG_BACKGROUND.Height()
+				Endif 
+				draws += 1
 			Case BUTTON_STYLE_RECT2
 				'DrawImage MANIAC_IMG_BG_SMOOTHRECT, MidX,MidY,0,(Width+AddWidthByMO)/MANIAC_IMG_BG_SMOOTHRECT.Width(),(Height+AddHeightByMO)/MANIAC_IMG_BG_SMOOTHRECT.Height()
 			Case BUTTON_STYLE_ROUND1
 				DrawImage MANIAC_IMG_BG_ROUND1, MidX,MidY,0,(Width+AddWidthByMO)/MANIAC_IMG_BG_SMOOTHRECT.Width(),(Height+AddHeightByMO)/MANIAC_IMG_BG_SMOOTHRECT.Height()
+				draws += 1
 			Case BUTTON_STYLE_ROUND2
 				DrawImage MANIAC_IMG_BG_ROUND2, MidX,MidY,0,(Width+AddWidthByMO)/MANIAC_IMG_BG_SMOOTHRECT.Width(),(Height+AddHeightByMO)/MANIAC_IMG_BG_SMOOTHRECT.Height()
+				draws += 1
 			Case BUTTON_STYLE_ROUND3
 				DrawImage MANIAC_IMG_BG_ROUND3, MidX,MidY,0,(Width+AddWidthByMO)/MANIAC_IMG_BG_SMOOTHRECT.Width(),(Height+AddHeightByMO)/MANIAC_IMG_BG_SMOOTHRECT.Height()
+				draws += 1
 		End Select 
 		'Maniac_Debug.addTotDraws(1)
 		
@@ -539,18 +572,23 @@ Class ManiacButton
 				Case BUTTON_STYLE_RECTSTD
 					Maniac_Color(FrameColor)
 					Drw_Rect(MidX- (Width +AddWidthByMO/2)/2,MidY-(Height+AddHeightByMO/2)/2,Width+AddWidthByMO,Height+AddHeightByMO,3)
+					draws += 1
 				Case BUTTON_STYLE_RECT2
 					Maniac_Color(FrameColor)
 					DrawImage MANIAC_IMG_FRAME_RECT2 , MidX,MidY,0,(Width+AddWidthByMO)/MANIAC_IMG_FRAME_RAW.Width(),(Height+AddHeightByMO)/MANIAC_IMG_FRAME_RAW.Height()
+					draws += 1
 				Case BUTTON_STYLE_ROUND1
 					Maniac_Color(FrameColor)
 					DrawImage MANIAC_IMG_FRAME_ROUND1 , MidX,MidY,0,(Width+AddWidthByMO)/MANIAC_IMG_FRAME_RAW.Width(),(Height+AddHeightByMO)/MANIAC_IMG_FRAME_RAW.Height()
+					draws += 1
 				Case BUTTON_STYLE_ROUND2
 					Maniac_Color(FrameColor)
 					DrawImage MANIAC_IMG_FRAME_ROUND2 , MidX,MidY,0,(Width+AddWidthByMO)/MANIAC_IMG_FRAME_RAW.Width(),(Height+AddHeightByMO)/MANIAC_IMG_FRAME_RAW.Height()
+					draws += 1
 				Case BUTTON_STYLE_ROUND3
 					Maniac_Color(FrameColor)
 					DrawImage MANIAC_IMG_FRAME_ROUND3 , MidX,MidY,0,(Width+AddWidthByMO)/MANIAC_IMG_FRAME_RAW.Width(),(Height+AddHeightByMO)/MANIAC_IMG_FRAME_RAW.Height()
+					draws += 1
 
 			End Select
 			 
@@ -567,14 +605,17 @@ Class ManiacButton
 			Case ALIGNMENT_LEFT
 				MANIAC_FONT.Wrap(Caption,MidX-Width/2,MidY-Height/5,Width,Height,Caption.Length())
 				ResetMatrix()
+				draws += 1
 			Case ALIGNMENT_MIDDLE
 				Local l:Int = MANIAC_FONT.getW(Caption)
 				MANIAC_FONT.Wrap(Caption,MidX-l/2+1,MidY-Height/5,Width,Height,Caption.Length())
 				ResetMatrix()
+				draws += 1
 			Case ALIGNMENT_RIGHT
 				Local l:Int = MANIAC_FONT.getW(Caption)
 				MANIAC_FONT.Wrap(Caption,MidX+Width/2-l,MidY-Height/5,Width,Height,Caption.Length())
-				ResetMatrix()	
+				ResetMatrix()
+				draws += 1	
 		End Select 
 		
 		
@@ -584,7 +625,8 @@ Class ManiacButton
 					SetAlpha 0.2
 					SetColor 255,255,255
 					DrawRect(MidX- (Width +AddWidthByMO/2)/2,MidY-(Height+AddHeightByMO/2)/2,Width+AddWidthByMO,Height+AddHeightByMO)
-					Maniac_Debug.addTotDraws(1)
+					'Maniac_Debug.addTotDraws(1)
+					draws += 1
 				Endif 
 			Else
 				'SetAlpha 0.6
@@ -597,6 +639,12 @@ Class ManiacButton
 		If Angle <> 0.0
 			ResetMatrix()
 		Endif 
+		
+		If MANIAC_DEBUG = True
+			Maniac_Debug.addTotCall()
+			Maniac_Debug.addRenderedObject()
+			Maniac_Debug.addTotDraws(draws)
+		Endif
 	End Method 
 	
 	Method Update:Int()
@@ -771,6 +819,11 @@ Class ManiacButton
 		MidY = _Y
 	End Method 
 	
+	Method setOrigPosition(_X:Float,_Y:Float)
+		oX = _X
+		oY = _Y
+	End Method 
+	
 	Method setSize(_Width:Float,_Height:Float)
 		Width = _Width
 		Height =_Height
@@ -820,6 +873,16 @@ Class ManiacButton
 		bMOBrighter		= _isBrightening
 		bMOWobble		= _isWobbling
 	End Method 
+	
+	Method setMouseOnClickAnim(_isOnClickEffect:Bool = True,_isSpinning:Bool = True, _isSoundOn:Bool = True ,_isDarkening:Bool = True)
+		bOnClickAnim = _isOnClickEffect
+		
+		'Checking for different types
+		bOnClick_Spinning  = _isSpinning
+		bOnClick_Darkening = _isDarkening
+		bOnClick_PlaySound = _isSoundOn
+	End Method
+	
 	
 	Method setInactiveAnim()
 	
@@ -903,6 +966,12 @@ Class ManiacButton
 	Method setSound:Void(_Bool:Bool)
 		bSound = _Bool
 	End Method 
+	
+	Method setBackground:Void(_WithImage:Bool,_Color:Int,_Image:Image=null)
+		Color = _Color
+		bWithImage = _WithImage
+		'ImgBackground = _Image
+	End Method 
 End Class 
 
 
@@ -932,6 +1001,7 @@ Class ManiacSlider
 	
 	Field SliderX:Float
 	
+	Field SliderStyle:Int = 0
 	Field Value:Float 
 	Field ValueFrom:Float
 	Field ValueTo:Float 
@@ -948,11 +1018,14 @@ Class ManiacSlider
 		_ValueTo	- sets the Maximum Return Value
 	#End
 	Method New(_X:Float,_Y:Float,_Width:Float,_Height:Float,_ValueFrom:Float = 0,_ValueTo:Float = 100)
-		Maniac_Debug.addStoredBools()
-		Maniac_Debug.addStoredInts()
-		Maniac_Debug.addStoredFloats(9)
-		maniacID = Maniac_Debug.getNumberOfRegisteredObjects()
-		Maniac_Debug.addRegisteredObject()
+		If MANIAC_DEBUG = True
+			Maniac_Debug.addStoredBools(1)
+			Maniac_Debug.addStoredInts(2)
+			Maniac_Debug.addStoredFloats(9)
+			'Maniac_Debug.addStoredStrings()
+			maniacID = Maniac_Debug.getNumberOfRegisteredObjects()
+			Maniac_Debug.addRegisteredObject()
+		Endif
 		
 		X = _X
 		Y = _Y
@@ -980,18 +1053,27 @@ Class ManiacSlider
 		This Method Draws the whole Slider with Picker.
 	#End
 	Method Draw()
-		Maniac_Debug.addTotCall()
-		'Maniac_Debug.addTotCalc(2)
-		Maniac_Debug.addTotDraws(2)
-		SetAlpha 1
-		SetColor 255,255,255
-		DrawImage MANIAC_IMG_SLIDERLINE,X,Y,0,Width/MANIAC_IMG_SLIDERLINE.Width(),Height/MANIAC_IMG_SLIDERLINE.Height()
-		
-		If HoldPicker = True
-			SetColor 0,255,0
-			DrawText "Value: " + getValue(),X,Y+Height
+	
+		If SliderStyle = 0
+			Maniac_Debug.addTotCall()
+			'Maniac_Debug.addTotCalc(2)
+			Maniac_Debug.addTotDraws(2)
+			SetAlpha 1
+			SetColor 255,255,255
+			DrawImage MANIAC_IMG_SLIDERLINE,X,Y,0,Width/MANIAC_IMG_SLIDERLINE.Width(),Height/MANIAC_IMG_SLIDERLINE.Height()
+			
+			If HoldPicker = True
+				SetColor 0,255,0
+				DrawText "Value: " + getValue(),X,Y+Height
+			Endif 
+			DrawImage MANIAC_IMG_SLIDERPICKER,SliderX,Y+Height*0.5,0,(Width*0.1)/MANIAC_IMG_SLIDERPICKER.Width(),(Height*1.2)/MANIAC_IMG_SLIDERPICKER.Height()
+		Elseif SliderStyle = 1
+			SetAlpha 1
+			SetColor 75,75,75
+			Drw_Rect(X,Y,Width,Height,1)
+			
+			DrawRect(SliderX,Y,Width*0.1,Height)
 		Endif 
-		DrawImage MANIAC_IMG_SLIDERPICKER,SliderX,Y+Height*0.5,0,(Width*0.1)/MANIAC_IMG_SLIDERPICKER.Width(),(Height*1.2)/MANIAC_IMG_SLIDERPICKER.Height()
 	End Method 
 	
 	#Rem monkeydoc
@@ -1002,17 +1084,38 @@ Class ManiacSlider
 		Maniac_Debug.addTotCall()
 		HoldPicker = False 
 		If TouchDown()
-			If MOBox( SliderX-(Width*0.1)/2,  Y,  (Width*0.1), (Height*1.2))
-				HoldPicker = True
-				SliderX = MouseX()
-				If SliderX >= X+Width
-					SliderX = X+Width
+		
+			If SliderStyle = 0
+				If MOBox( SliderX-(Width*0.1)/2,  Y,  (Width*0.1), (Height*1.2))
+					HoldPicker = True
+					SliderX = MouseX()
+					
+					If SliderX >= X+Width
+						SliderX = X+Width
+					Endif
+					If SliderX <= X
+						SliderX = X
+					Endif   
 				Endif
-				If SliderX <= X
-					SliderX = X
-				Endif  
+			Elseif SliderStyle = 1
+				If MOBox( SliderX-10,  Y,  (Width*0.1+20), (Height))
+					HoldPicker = True
+					SliderX = MouseX()-Width*0.05
+					If SliderX >= X+Width
+						SliderX = X+Width*0.9
+					Endif
+					If SliderX <= X
+						SliderX = X
+					Endif
+				Endif 
+			 
 			Endif 
 		Endif 
+	End Method 
+	
+	
+	Method setStyle:Void(_Style:Int = 0)
+		SliderStyle = _Style
 	End Method 
 End Class
 
@@ -1053,6 +1156,15 @@ Class ManiacGallery	Implements IOnLoadImageComplete
 	Field Alpha:float
 	
 	Method New(_X:Float,_Y:Float,_Width:Float,_Height:Float,_loadPath:String = "GFX/")
+		
+		If MANIAC_DEBUG = True
+			'Maniac_Debug.addStoredBools(1)
+			Maniac_Debug.addStoredInts(9)
+			Maniac_Debug.addStoredFloats(6)
+			'Maniac_Debug.addStoredStrings()
+			maniacID = Maniac_Debug.getNumberOfRegisteredObjects()
+			Maniac_Debug.addRegisteredObject()
+		Endif
 		'arrImg[
 		X = _X
 		Y = _Y
@@ -1189,6 +1301,16 @@ Class ManiacGallery	Implements IOnLoadImageComplete
 		If _image <> Null
 			arrImg[loadedImages] = _image
 			loadedImages += 1
+			
+			If MANIAC_DEBUG = True
+			'Maniac_Debug.addStoredBools(1)
+			'Maniac_Debug.addStoredInts(9)
+			'Maniac_Debug.addStoredFloats(6)
+			'Maniac_Debug.addStoredStrings()
+				Maniac_Debug.addStoredImages(1)
+			'maniacID = Maniac_Debug.getNumberOfRegisteredObjects()
+			'Maniac_Debug.addRegisteredObject()
+			Endif
 		Else
 			Print "no image : "+loadedImages
 		Endif 
@@ -1229,26 +1351,67 @@ End class
 	</pre>
 #End
 Class ManiacRadioGroup
-	Field X:Int,Y:Int,Width:Int,Height:Int
+	Field maniacID:Int
+	#rem
+		TODO:
+			- Wrap to Radios as a Modyfier. (means, that each Radio has a predefined Height/Width and the RadioGroup's Size will change with the number of Radios.
+	#end
+	Field X:Float,Y:Float,Width:Float,Height:Float 
 	Field bFramed:Bool = true
 	Field listElements:List<RadioElement>
 	Field dist:Float = 8
 	Field ActiveElementID:Int 
 	Field Caption:String
+	Field AlignRadio:Int = 1 	'0-Horizontal ; 1-Vertical		// 1 should be Standard at the Moment! will be fixed to Version 1.1
 	
-	Method New(x:Int,y:Int,w:Int,h:Int,caption:String = "")
-		X = x
-		Y = y
-		Width = w
-		Height = h
-		Caption = caption
+	Field Color_CaptionBG:Int = COLOR_BLACK
+	Field Color_CaptionText:Int = COLOR_WHITE
+	
+	Method New(_X:Float,_Y:Float,_Width:Float,_Height:Float,_Caption:String = "") 
+		If MANIAC_DEBUG = True
+			'Maniac_Debug.addStoredBools(1)
+			Maniac_Debug.addStoredInts(4)
+			Maniac_Debug.addStoredFloats(4)
+			Maniac_Debug.addStoredStrings(1)
+			maniacID = Maniac_Debug.getNumberOfRegisteredObjects()
+			Maniac_Debug.addRegisteredObject()
+		Endif
+		X = _X
+		Y = _Y
+		Width = _Width
+		Height = _Height
+		Caption = _Caption
 		listElements = New List<RadioElement>
 	End Method
 	
 	Method Draw()
+	
+		#rem
+			### Drawing the Radio Elements ###
+		#end
     	For Local oRE:RadioElement = Eachin listElements
      		oRE.Draw()
     	Next 
+    	
+    	#rem
+    		Drawing the Caption
+    	#end
+    	Maniac_Color(Color_CaptionBG)
+    	DrawRect(X,Y-35,Width,35)
+    	
+    	Maniac_Color(Color_CaptionText)
+    	SetAlpha 1
+    	Drw_ManiacText(Caption,X,Y-35,Width,35,ALIGNMENT_MIDDLE)
+    	
+    	
+    	Local str:String = "selected Value: " + getActiveElementValue()
+    	Drw_ManiacText(str,X,Y+Height,Width,35,ALIGNMENT_MIDDLE)
+    	
+    	If MANIAC_DEBUG = True
+			Maniac_Debug.addTotCall()
+			Maniac_Debug.addRenderedObject()
+			Maniac_Debug.addTotDraws(3)
+		Endif
 	End Method 
 	
 	Method addChoice(_Caption:String,_Value:Int)
@@ -1290,32 +1453,91 @@ Class ManiacRadioGroup
 	
 	Private
 	Method reOrder()
-	    Local eW:Float = ll_Width(Width,listElements.Count(),10)
-	    
-	    Local i:Int = 0
-	    For Local oRE:RadioElement = Eachin listElements
-	    	oRE.setPosition(X + 10 + i*eW/2.0, Y + Height*0.5, eW/2,eW/2)
-	    	i +=1
-	    Next 
+		If AlignRadio = 0
+			Local eW:Float = ll_Width(Width,listElements.Count(),10)
+			
+		    
+		    Local i:Int = 0
+		    For Local oRE:RadioElement = Eachin listElements
+		    	oRE.setPosition(X + 10 + i*eW/2.0, Y + Height*0.5, eW/2,eW/2)
+		    	i +=1
+		    Next 
+		    
+		Elseif AlignRadio = 1
+			Local eH:Float = ll_Width(Height,listElements.Count(),3)
+		  	Local i:Int = 0
+		    For Local oRE:RadioElement = Eachin listElements
+		    	oRE.setPosition(X , Y + i*eH , Width,eH-2)
+		    	i +=1
+		    Next
+		Endif 
 	End Method 
 End Class 
 
 Private 
 Class RadioElement
+	Field maniacID:Int 
   	Field ID:Int 
 	Field Caption:String
 	Field Value:Int
 	Field X:Float,Y:Float,Width:Float,Height:Float 
 	Field bActive:Bool 
 	
-	Method New(_Caption:String,_Value:int)
+	Field AlignRadio:Int = 0
+	
+	Field Color_BG:Int = 7
+	
+	Method New(_Caption:String,_Value:Int,_Align:Int = 1)
+		If MANIAC_DEBUG = True
+			Maniac_Debug.addStoredBools(1)
+			Maniac_Debug.addStoredInts(5)
+			Maniac_Debug.addStoredFloats(4)
+			Maniac_Debug.addStoredStrings(1)
+			maniacID = Maniac_Debug.getNumberOfRegisteredObjects()
+			Maniac_Debug.addRegisteredObject()
+		Endif
 		Caption =_Caption 
 		Value =_Value
+		AlignRadio = _Align
 	End Method 
 	
 	Method Draw()
+	
+		Local draws:Int = 0
+		
     	'Drawing the Selectable Circle
-    	'Drw_Ellipsis( X, Y, Width, Height)
+    	If AlignRadio = 0
+    		Drw_Ellipsis( X, Y, Width, Height)
+    		draws +=1
+    	Elseif AlignRadio = 1	'Vertical (Android SelectorStyle ...)
+    	
+    		#rem
+				Drawing the Background
+			#end
+			Maniac_Color(Color_BG)
+			DrawImage MANIAC_IMG_BACKGROUND ,X,Y ,0 ,Width/MANIAC_IMG_BACKGROUND.Width(),Height/MANIAC_IMG_BACKGROUND.Height()
+		
+			Maniac_Color(5)
+    		Drw_Rect(X,Y,Width,Height,1)
+    		
+    		
+    		Drw_Circle(X+Width-Height/2-2,Y+Height/2,Height*0.9)
+    		
+    		If bActive = True
+    			SetColor 0,0,0
+    			DrawCircle(X+Width-Height/2-2,Y+Height/2,Height*0.23)
+    			draws +=1
+    		Endif 
+    		SetColor 0,0,0
+    		Drw_ManiacText(Caption,X,Y,Width-Height*0.9,Height,ALIGNMENT_MIDDLE)
+    		draws +=4
+    	Endif 
+    	
+    	If MANIAC_DEBUG = True
+			Maniac_Debug.addTotCall()
+			Maniac_Debug.addRenderedObject()
+			Maniac_Debug.addTotDraws(draws)
+		Endif
 	End Method 
 	
 	Method setPosition(_X:Float, _Y:Float, _Width:Float,_Height:Float)
@@ -1326,7 +1548,7 @@ Class RadioElement
 	End Method 
 	
 	Method Update:Int()
-    	If MOCircle(X,Y,Width)
+    	If MOBox(X,Y,Width,Height)
      		If gl_mousereleased
         		Return ID
      		Endif 
@@ -1336,6 +1558,10 @@ Class RadioElement
 	
 	Method setActive(_isActive:Bool = True)
    		bActive = _isActive
+	End Method 
+	
+	Method isActive:Bool()
+		Return bActive
 	End Method 
 End Class 
 public
@@ -1753,6 +1979,131 @@ Class ManiacDialog
 	
 	Method setVisible(_bVisible:Bool = True)
 		bVisible = _bVisible
+	End Method 
+End Class 
+
+
+
+Class ManiacTabLane
+
+	Field Align:Int = 0	'0-Top,1-Left,2-Bottom,3-Right
+	Field disposal:Int 	= 0		'0 - from (resp. top) corner , with maxWidth and distance ; 1 - middle ,Buttons will be Wraped, 2 - middle, Button keep maxWidth , 3 - Right / Bottom 
+	Field listTabs:List<ManiacButton>
+	
+	Field Width:Float
+	Field Height:Float 
+	Field X:Float
+	Field Y:Float 
+	Field bOpen:Bool = True 	'true - it will be Shown ; 'false it shows only a hint to open or Something ...
+	
+	
+	Field bBack:Bool = True 
+	
+	Method New(_Align:Int = 0 )
+		listTabs = New List<ManiacButton>
+		Select _Align
+			Case 0		'## TOP ##
+				Width = DW
+				Height = DH*0.08
+				X = 0
+				Y = 0
+				
+			Case 1		'## LEFT ##
+				Width = DW*0.08
+				Height = DH
+				X = 0
+				Y = 0
+				
+			Case 2	'## BOTTOM ##
+				Width = DW
+				Height = DH*0.08
+				X = 0
+				Y = DH*0.92
+				
+			Case 3	'## Right ##
+				Width = DW*0.08
+				Height = DH
+				X = DW*0.92
+				Y = 0
+		End Select
+		
+	End Method 
+	
+	Method addTab(_Caption:String)
+		Local nX:Float
+		Local nY:Float
+		Local w:Float
+		Local h:Float 
+		
+		Local oB:ManiacButton = New ManiacButton(0,	0,  DW*0.1,	DH*0.07,_Caption,  ALIGNMENT_MIDDLE,COLOR_BLUE,True,1)
+		oB.setGlow(False)
+		oB.ID = listTabs.Count()
+		listTabs.AddLast(oB)
+		
+		reOrder()
+	End Method 
+	
+	Method Draw:Void()
+		If bOpen = True 
+			SetAlpha 0.5
+			SetColor 89,30,240
+			DrawRect(X,Y,Width,Height)
+			
+			For Local oB:ManiacButton = Eachin listTabs
+				oB.Draw()
+			Next 
+			
+			If bBack = True
+				DrawImage MANIAC_IMG_ICO_BACK , DW*0.9,Height*0.1,0,DW*0.1/MANIAC_IMG_ICO_BACK.Width(),(Height*0.8)/MANIAC_IMG_ICO_BACK.Height()
+			Endif 
+		Else
+		
+		Endif 
+	End Method
+	
+	Method Update:Int()
+		For Local oB:ManiacButton = Eachin listTabs
+			If oB.Update() = 101
+				If gl_mousereleased = True
+					Return oB.ID
+				Endif 
+			Endif 
+		Next 
+		
+		Return -1
+	End Method 
+	
+	Method reOrder()
+		Select Align
+			Case 0
+				Select disposal
+					Case 0
+						Local maxW:Float = DW * 0.2
+						Local x:Float = maxW/2
+						Local dist:Int = 15
+						Local h:Float = DH*0.05
+						Local y:Float = DH*0.08/2
+						Local i:Int = 0
+						For Local oB:ManiacButton = Eachin listTabs
+							oB.setOrigPosition( (x+dist)+i*(maxW+dist),y )
+							oB.setPosition( (x+dist)+i*(maxW+dist) , y )
+							oB.setSize(maxW,h)
+							i += 1
+						Next 
+					Case 1
+					Case 2
+					Case 3
+				
+				End Select
+			Case 1
+			Case 2
+			Case 3
+		End Select
+	End Method 
+	
+	
+	Method startAnimIntro()
+	
 	End Method 
 End Class 
 
