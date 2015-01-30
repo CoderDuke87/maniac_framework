@@ -1,1 +1,13 @@
 #Versions
+
+30.1.2015
+  Changed to Version 0.9 Alpha
+  - Almost all Functions are include.
+  - Now its Bugfix and Design-Time. I will now work on the visual Style of my Framework.
+    Therefor i will reorganise the lib-folder. I will redraw all Graphics.
+    I will include 1 Standard Global-Design for ALL Objects of my Framework.
+    
+    ToDo for 1.0 (Alpha)
+    - 1 Global Standard-Design
+    - Recode all Sources, Add Documentation if needed
+    - Put in Examples for each Feature
