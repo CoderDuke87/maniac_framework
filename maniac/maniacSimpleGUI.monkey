@@ -21,6 +21,7 @@
 	VERSION:~n
 	0.1.6	- added Sounds to Button & Dropdown
 			- update Slider (Now has 2 Styles)
+			- RadioGroup updated visual Style
 			
 	0.1.5	- updated Textfield Class
 				- now shows the Cursor, X-Alignment is available, set the Alpha, Wrap Textfield to Height of Text (Single Line Only at the Moment!!!!!)
@@ -84,6 +85,7 @@ Class ManiacTextfield
 	Field W:Int,H:int
 	
 	Field Style:Int  
+	Field bHide:Bool = False 
 	
 	Field bShowButton:Bool 	= False 
 	Field bShowCaption:Bool
@@ -342,6 +344,10 @@ Class ManiacTextfield
 			Maniac_Debug.addTotCall()
 		Endif
 		Caption = _Text
+	End Method 
+	
+	Method setHide(_Bool:Bool)
+	
 	End Method 
 End Class
 
@@ -734,6 +740,13 @@ Class ManiacButton
 		Endif
 	End Method 
 	
+	Method getID:Int()
+		Return ID
+	End Method 
+	
+	Method setID:Void(_ID:Int)
+		ID = _ID
+	End Method 
 	
 	Method startAnim(_AnimType:Int,  fromX:Float ,toX:Float ,_AnimTime:Int = 1000,ias:Float = 720,iae:Float = 0)
 	
@@ -978,6 +991,8 @@ End Class
 #Rem monkeydoc
 	This Class is a Slider Gui Element.
 	Version 1.0 (a) Stable but unhandy
+	
+	ToDo: Vertical/Horizontal Align
 	Example:
 	<pre>
 		'This Example Shows how to use the Slider
@@ -1000,6 +1015,8 @@ Class ManiacSlider
 	Field X:Float,Y:Float,Width:Float,Height:Float
 	
 	Field SliderX:Float
+	Field SliderY:Float 
+	Field Align:Int = 0		'0 - Hoirontal, 1- Vertical
 	
 	Field SliderStyle:Int = 0
 	Field Value:Float 
@@ -1040,9 +1057,11 @@ Class ManiacSlider
 		This Method returns the Current Value of Slider.
 	#End
 	Method getValue:Float()
-		Maniac_Debug.addTotCall()
-		Maniac_Debug.addTotCalc(2)
-		'Maniac_Debug.addTotDraws()
+		If MANIAC_DEBUG = True
+			Maniac_Debug.addTotCall()
+			Maniac_Debug.addTotCalc(2)
+			'Maniac_Debug.addTotDraws()
+		Endif 
 		Local p:Float = (SliderX - X) / (X+Width-X)
 		Local val:Float =  ValueFrom + (ValueTo-ValueFrom)*p
 		
@@ -1055,9 +1074,11 @@ Class ManiacSlider
 	Method Draw()
 	
 		If SliderStyle = 0
-			Maniac_Debug.addTotCall()
-			'Maniac_Debug.addTotCalc(2)
-			Maniac_Debug.addTotDraws(2)
+			If MANIAC_DEBUG = True
+				Maniac_Debug.addTotCall()
+				'Maniac_Debug.addTotCalc(2)
+				Maniac_Debug.addTotDraws(2)
+			Endif 
 			SetAlpha 1
 			SetColor 255,255,255
 			DrawImage MANIAC_IMG_SLIDERLINE,X,Y,0,Width/MANIAC_IMG_SLIDERLINE.Width(),Height/MANIAC_IMG_SLIDERLINE.Height()
@@ -1081,7 +1102,9 @@ Class ManiacSlider
 		It checks for User-Slider for its own.
 	#End
 	Method Update()
-		Maniac_Debug.addTotCall()
+		If MANIAC_DEBUG = True
+			Maniac_Debug.addTotCall()
+		Endif 
 		HoldPicker = False 
 		If TouchDown()
 		
@@ -1116,6 +1139,10 @@ Class ManiacSlider
 	
 	Method setStyle:Void(_Style:Int = 0)
 		SliderStyle = _Style
+	End Method 
+	
+	Method setAlign:Void(_Align:Int = 0)
+		Align = _Align
 	End Method 
 End Class
 
@@ -1730,8 +1757,8 @@ Class ManiacDropDown
 	Field showOpenHeader:Int	= 1		'0 - Always Show Caption, 1 - Show MouseOver Elements , 2 - Show Selected Element
 	Field showCloseHeader:Int 	= 2
 	Field bCloseOnSelected:Bool = True 
-	
-	Field ShowLines:Int 	= 5
+	Field bWrapToLines:Bool 
+	Field ShowLines:Int 	= 2
 	Field ScrolledLines:Int = 0
 	Field listTextElements:List<textElement>
 	Field MOElement:Int 
@@ -1763,7 +1790,7 @@ Class ManiacDropDown
 	
 	End Method 
 	
-	Method DrawText()
+	Method DrawLines()
 		For Local oL:textElement = Eachin listTextElements
 			oL.Draw(X+5,Y+Height+oL.Line*(27+5),200,100)	
 		Next 
@@ -1783,8 +1810,14 @@ Class ManiacDropDown
 	
 		If bOpened = True
 			Drw_Rect(X,Y,Width,Height,2)
-			Drw_Rect(X,Y+Height,Width,Height+ShowLines*(MANIAC_FONT.getH()+5),1)
-			DrawText()
+			
+			If bWrapToLines = True
+				Drw_Rect(X,Y+Height,Width,Height+(listTextElements.Count()-1)*(MANIAC_FONT.getH()+5),1)
+			Else 
+				Drw_Rect(X,Y+Height,Width,Height+ShowLines*(MANIAC_FONT.getH()+5),1)
+				
+			Endif 
+			DrawLines()
 			
 			Select showOpenHeader
 				Case 0
@@ -1814,16 +1847,16 @@ Class ManiacDropDown
 	
 	Method Update()
 		If TouchHit()
-		If MOBox(X+Width*0.9,Y, Width*0.1, Height)
-			If bOpened = True
-				bOpened = False
-			Else
-				bOpened = True
-				If GLOBAL_SOUNDON = True And bSound = True 
-					PlaySound(MANIAC_SND_SLIDE3)
+			If MOBox(X+Width*0.9,Y, Width*0.1, Height)
+				If bOpened = True
+					bOpened = False
+				Else
+					bOpened = True
+					If GLOBAL_SOUNDON = True And bSound = True 
+						PlaySound(MANIAC_SND_SLIDE3)
+					Endif 
 				Endif 
-			Endif 
-		Endif
+			Endif
 		Endif 
 		MOElement = -1
 		If bOpened
@@ -1861,6 +1894,9 @@ Class ManiacDropDown
 		Next
 	End Method 
 	
+	Method setWrapToLines:Void(_Bool:bool)
+		bWrapToLines = _Bool
+	End Method 
 End Class
 
 #Rem monkeydoc
@@ -1881,28 +1917,60 @@ Class ManiacListView
 	Field maniacID:Int
 	Field X:Float,Y:Float,Width:Float,Height:Float
 	Field listText:List<textElement>
+	Field Caption:String 
 	
 	Field nrLines:Int 
 	Field ScrolledLine:Int = 0
 	
-	Method New(_X:Float,_Y:Float,_Width:Float,_Height:Float)
+	Field ScrollStyle:Int = 1
+	
+	Field scroller:ManiacSlider
+	
+	Method New(_X:Float,_Y:Float,_Width:Float,_Height:Float,_Caption:String = "",_ScrollStyle:Int = 0)
 		nrLines = _Height/32
 		X = _X
 		Y = _Y
 		Width =_Width
 		Height = _Height
+		Caption = _Caption
+		If _ScrollStyle = 1
+			scroller = New ManiacSlider
+		Endif 
 		listText = New List<textElement>
 	End Method
 	
 	Method Draw()
+		
+		'### Background ###
+		SetColor 255,255,255
+		DrawRect(X,Y,Width,Height)
+		
+		
+		'### Header/Caption ###
+		SetColor 135,206,250
+		DrawRect(X,Y,Width,30)
+		
+		SetColor 0,0,0
+		Drw_ManiacText(Caption,X,Y,Width,30,ALIGNMENT_MIDDLE,ALIGNMENT_MIDDLEY)
+		
+		'### Frame around the Listview ###
+		SetColor 75,75,75
 		Drw_Rect(X,Y,Width,Height,2)
 		
+		SetColor 0,0,0
 		For Local i:Int = 0 Until nrLines
-			MANIAC_FONT.Wrap(getText(i+ScrolledLine),X+5,Y+5+i*(27+5),Width,Height,40)
+			MANIAC_FONT.Wrap(getText(i+ScrolledLine),X+5,Y+35+i*(27+5),Width,30,100)
 		Next 
 		
-		SetAlpha 1
-		DrawImage MANIAC_IMG_ARROWDOWN,X,Y+Height+5,0,Width/MANIAC_IMG_ARROWDOWN.Width(),48.0/MANIAC_IMG_ARROWDOWN.Height()
+		If ScrollStyle = 0
+			SetAlpha 1
+			DrawImage MANIAC_IMG_ARROWDOWN,X,Y+Height+5,0,Width/MANIAC_IMG_ARROWDOWN.Width(),48.0/MANIAC_IMG_ARROWDOWN.Height()
+		Elseif ScrollStyle = 1
+		
+		Else 
+		
+		Endif 
+		
 	End Method
 	
 	Method Update()
@@ -1918,7 +1986,10 @@ Class ManiacListView
 		listText.AddLast(oL)
 	End Method 
 	
-	Private 
+	Method setScrollStyle(_Style:Int = 0)
+		ScrollStyle = _Style
+	End Method 
+	
 	Method getText:String(_ID:Int)
 		Local i:Int = 0
 		For Local oL:textElement = Eachin listText
@@ -1928,6 +1999,8 @@ Class ManiacListView
 			i +=1
 		Next 
 	End Method 
+	
+	
 End Class 
 
 
@@ -1982,7 +2055,145 @@ Class ManiacDialog
 	End Method 
 End Class 
 
+Class ManiacImageStateBar
 
+	Field ManiacID:Int 
+	Field X:Float,Y:Float,Width:Float,Height:Float
+	Field Caption:String 
+	
+	Field Btn_Add:ManiacButton
+	Field Btn_Del:ManiacButton
+	Field IconWidth:Float,IconHeight:Float 
+	Field ImgState:Image[]
+	Field IntState:Int[]
+	Field IconState:Int[]
+	Field IconColor:Int[]
+	'Field ListIcons:List<IconImage>
+	Field NrStates:Int 		= 0
+	Field MaxNrIcons:Int 
+	Field MinNrIcons:Int 	= 2
+	Field CurrNrIcons:Int 	= 0
+	
+	Field MOIcon:Int 
+
+	Method New(_X:Float,_Y:Float,_Width:Float,_Height:Float,_Caption:String = "",_MaxNrIcons:Int = 4,_MaxStates:Int = 10)
+		ImgState = New Image[_MaxStates]
+		IntState = New Int[_MaxStates]
+		IconState = New Int[_MaxNrIcons]
+		IconColor = New Int[_MaxNrIcons]
+		'IconState = New Int[_MaxNrIcons]
+		MaxNrIcons = _MaxNrIcons
+		X = _X
+		Y = _Y
+		Width = _Width
+		Height = _Height
+		IconWidth = ll_Width(_Width,_MaxNrIcons,15)
+		IconHeight = _Height-10
+		Caption = _Caption
+		Btn_Add = New ManiacButton(_X+_Width+DW*0.075,_Y+_Height/2,DW*0.1,DH*0.05,"Add",ALIGNMENT_MIDDLE,COLOR_BLUE,False)
+		Btn_Del = New ManiacButton(_X-DW*0.075,_Y+_Height/2,DW*0.1,DH*0.05,"Del",ALIGNMENT_MIDDLE,COLOR_BLUE,False)
+	End Method 
+	
+	Method addState:Void(_StateInt:Int,_ImgState:Image)
+		ImgState[NrStates] = _ImgState
+		IntState[NrStates] = _StateInt
+		NrStates += 1
+	End Method 
+	
+	Method addIcon:Void(_State:Int = 0,_Color:Int = 10)
+		If CurrNrIcons < MaxNrIcons
+			IconState[CurrNrIcons] = _State
+			CurrNrIcons +=1
+		Endif 	
+	End Method 
+	
+	Method setIconColor:Void(_ID:Int,_Color:Int)
+		IconColor[_ID] = _Color
+	End Method 
+	
+	Method delIcon:Void()
+		If CurrNrIcons > MinNrIcons
+			CurrNrIcons -=1
+		Endif
+	End Method 
+	
+	Method Draw:Void()
+		For Local i:Int = 0 until CurrNrIcons
+			Drw_Rect(X + 15 +(i)*(IconWidth+15),Y+5,IconWidth,IconHeight)
+			If ImgState[IconState[i]] <> Null
+				Maniac_Color(IconColor[i])
+				DrawImage ImgState[IconState[i]], X + 15 +(i)*(IconWidth+15),Y+5,0,IconWidth/ImgState[IconState[i]].Width(),IconHeight/ImgState[IconState[i]].Height()
+			Endif 
+		Next 
+		Btn_Add.Draw()
+		Btn_Del.Draw()
+		Drw_Rect(X,Y,Width,Height,2)
+		Drw_ManiacText(Caption,X,Y-30,Width,30,ALIGNMENT_MIDDLE,ALIGNMENT_MIDDLEY)
+	End Method 
+	
+	Method switchState(_ID:Int)
+		If IconState[_ID] < NrStates-1
+			IconState[_ID] +=1
+		Else
+			IconState[_ID] = 0
+		Endif 
+		
+	End Method  
+	
+	Method Update:Void()
+		Local id:Int = -1
+		For Local i:Int = 0 Until CurrNrIcons
+			If MOBox(X + 15 +(i)*(IconWidth+15),Y+5,IconWidth,IconHeight)
+				id = i
+			Endif 
+		Next 
+		If TouchHit()
+			If id <> -1
+				'Print id
+				switchState(id)
+			Endif 
+		Endif 
+		If Btn_Add.Update() = 101 And gl_mousereleased = True
+			addIcon()
+		Endif 
+		
+		If Btn_Del.Update() = 101 And gl_mousereleased = True
+			delIcon()
+		Endif
+		
+		
+	End Method 
+	
+	Method setMaxIcons:Void(_Nr:Int)
+		MaxNrIcons = _Nr
+	End Method 
+	
+	Method getIconState:Int(_ID:Int)
+		Return IntState[_ID]
+	End Method 
+	
+	Method getIconNr:Int()
+		Return CurrNrIcons
+	End Method 
+	
+End Class 
+
+Class IconImage
+	Field X:Float,Y:Float,Width:Float,Height:Float
+	Field Img:Image 
+	
+	Method setImage(_Img:Image)
+		Img = _Img
+	End Method 
+	
+	Method Draw:Void()
+		DrawImage Img,X,Y,0,Width/Img.Width(),Height/Img.Height()
+	End Method 
+	
+	Method Update()
+	
+	End Method 
+End Class 
 
 Class ManiacTabLane
 

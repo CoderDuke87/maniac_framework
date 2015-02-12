@@ -93,13 +93,13 @@ Function Array2Dmf:ManiacField[][] (i:Int, j:Int)
 End
 
 
-#rem
+
 Function Array3D:Int[][][] (i:Int, j:Int,k:int,fill:Int = 0)
     Local arr:Int[][][] = New Int[i][][]
     For Local ind = 0 Until i
         arr[ind] = New Int[j][]
         For Local ind2:Int = 0 Until j
-        	arr[ind][j] = New Int[k]
+        	arr[ind][ind2] = New Int[k]
         Next 
     Next
     
@@ -107,11 +107,38 @@ Function Array3D:Int[][][] (i:Int, j:Int,k:int,fill:Int = 0)
     	For Local h:Int = 0 Until j
     		For Local o:Int = 0 Until k
     		arr[w][h][o] = fill
+    		Next 
     	Next
     Next 
     Return arr		
 End
-#end
+
+#rem
+	a:Array2D<Int> = new Array2D<Int>(10)
+#end 
+Class gArray2D<T>
+	Field arr:T[][]
+	
+	Method New(size:Int)
+		'Local arr:Int[][] = New T[size][]
+		arr = arr.Resize(size)
+    	For Local ind = 0 Until size
+        	arr[ind] = New T[size]
+    	Next
+	End Method 
+	
+	Method New(sizeX:Int,sizeY:Int)
+	End Method 
+	
+	Method Get:T(_X:Int,_Y:Int)
+		Return arr[_X][_Y]
+	End Method
+	
+	Method Set(_X:Int,_Y:Int,value:T)
+		arr[_X][_Y] = value
+	End Method
+	
+End Class 
 
 #Rem monkeydoc
 	This Functions converts movement Data to Movements per Second.

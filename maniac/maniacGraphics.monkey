@@ -195,7 +195,7 @@ End Function
 #End
 Function Drw_Grid:Void(_X:Float,_Y:Float,_Width:Float,_Height:Float,_CellsX:Int,_CellsY:Int)
 	If MANIAC_DEBUG = True
-		Maniac_Debug.addTotDraws(2*cntx*cnty)
+		Maniac_Debug.addTotDraws(2*_CellsX*_CellsY)
 	endif
 	'zeichnet ein Gitter an Position posx,posy (links oben), w/h breite bzw. hÃƒÂ¶he (des gesamten Grids) und zieht dabei cntx/cnty striche in der horizontalen,bzw vertikalen
 	'allerdings wird hierbei das Gitter automatisch angepasst
@@ -204,14 +204,14 @@ Function Drw_Grid:Void(_X:Float,_Y:Float,_Width:Float,_Height:Float,_CellsX:Int,
 	Local cell_w:Float = _Width/_CellsX
 	Local cell_h:Float = _Height/_CellsY
 
-	For Local x:Int = 1 To cntx-1
-		For Local y:Int = 1 To cnty-1
+	For Local x:Int = 1 To _CellsX-1
+		For Local y:Int = 1 To _CellsY-1
 		
 			'Vertikale
-			DrawLine(_X+x*cell_w,_Y,_X+x*cell_w,_Y+cnty*cell_h)
+			DrawLine(_X+x*cell_w,_Y,_X+x*cell_w,_Y+_CellsY*cell_h)
 			
 			'Horizontale
-			DrawLine(_X,_Y+y*cell_h,_X+cntx*cell_w,_Y+y*cell_h)
+			DrawLine(_X,_Y+y*cell_h,_X+_CellsX*cell_w,_Y+y*cell_h)
 			
 		Next
 	Next 

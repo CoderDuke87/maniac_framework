@@ -108,6 +108,24 @@ Function ll_Width:Float(_Width:Float,_Number:Float,_Distance:Float)
 	Return fW
 End Function 
 
+
+#rem 
+	Gibt den "Grid"-Wert des Cursors zurück.
+	Bsp:
+	Ihre Map besteht aus 20x20'er Kacheln 100pxl von beiden Ordinaten abstand.
+	dann enstricht die Mouseposition 134,110 einem Gridwert von 2,1
+#end 
+Function ll_GridX:Int(width_p:Int, offset:Int = 0)
+	
+	Return (MouseX() -offset) / (width_p)
+
+End Function
+
+Function ll_GridY:Int(width_p:Int, offset:Int = 0)
+
+	Return (MouseY() -offset) / (width_p)
+
+End Function
 #Rem monkeydoc
 	### Experimental ###~n
 	This Function initialises a new Tween Object with Costum setting.
