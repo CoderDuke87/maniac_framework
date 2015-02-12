@@ -2318,6 +2318,43 @@ Class ManiacTabLane
 	End Method 
 End Class 
 
+
+class ManiacTitle
+	Field X:Float,Y:Float 
+	Field Scale:Float = 2.4
+	Field strArray:String[]
+	Field strArrayColor:Int[]
+	Field NrChars:Int 
+	
+	Method New(_X:Float,_Y:Float)
+		X =_X
+		Y =_Y
+		strArray = New String[30]
+		strArrayColor = New Int[30]
+	End Method 
+	
+	Method Draw()
+		ScaleAt(X, Y, Scale, Scale)
+		Local pos:Float = 0
+		For Local i:Int = 0 Until NrChars
+			Maniac_Color(strArrayColor[i])
+			MANIAC_FONT.Wrap(strArray[i],X + pos,Y,100,100,1)
+			pos += MANIAC_FONT.getW(strArray[i])
+		Next 
+	End Method
+	
+	Method addChar:Void(_Character:String,_Color:int)
+		strArray[NrChars] = _Character
+		strArrayColor[NrChars] = _Color
+		NrChars +=1
+	End Method 
+	
+	Method setScale(_Scale:Float)
+		Scale = _Scale
+	End Method 
+End Class 
+
+
 private
 Class ManiacAnimRect
 	'Identificanitional Values
