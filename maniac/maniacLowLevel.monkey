@@ -109,6 +109,15 @@ Function ll_Width:Float(_Width:Float,_Number:Float,_Distance:Float)
 End Function 
 
 
+
+Function ll_ConvertToBool:bool(_int:Int)
+	If _int = 0
+		Return False 
+	Else
+		Return True 
+	Endif 
+End Function 
+
 #rem 
 	Gibt den "Grid"-Wert des Cursors zurück.
 	Bsp:

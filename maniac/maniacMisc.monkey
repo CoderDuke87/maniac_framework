@@ -9,8 +9,8 @@
 
 
 Import mojo
-Import maniacDebug
-Import maniacString
+Import maniac
+'Import maniacString
 #If (TARGET <> "html5") And (TARGET <> "flash")
 	Import brl.FileSystem
 #Endif
@@ -120,7 +120,7 @@ Class gArray2D<T>
 	Field arr:T[][]
 	
 	Method New(size:Int)
-		'Local arr:Int[][] = New T[size][]
+		Local arr:T[][] = New T[size][]
 		arr = arr.Resize(size)
     	For Local ind = 0 Until size
         	arr[ind] = New T[size]
@@ -128,6 +128,11 @@ Class gArray2D<T>
 	End Method 
 	
 	Method New(sizeX:Int,sizeY:Int)
+		Local arr:T[][] = New T[sizeX][]
+		'arr = arr.Resize(sizeX)
+    	For Local ind = 0 Until sizeX
+        	arr[ind] = New T[sizeY]
+    	Next
 	End Method 
 	
 	Method Get:T(_X:Int,_Y:Int)
@@ -173,6 +178,19 @@ Function MOBox:Bool(_X:Float, _Y:Float, _Width:Float, _Height:float)
 
 End Function
 
+#rem
+Function CollideBox:Bool(_X:Float, _Y:Float, _Width:Float, _Height:Float)
+	Maniac_Debug.addTotCall()
+	Maniac_Debug.addTotCalc()
+	Maniac_Debug.addCalc()
+	If _X < MouseX() And _X + _Width > MouseX() And _Y < MouseY() And _Y + _Height > MouseY()
+		Return True
+	Else
+		Return False
+	Endif
+
+End Function
+#end 
 #Rem monkeydoc
 	This Functions Checks if the MouseCursor is within this circle dimensions.
 #End
@@ -291,6 +309,19 @@ Function GetTimeStamp:String(_Style:Int = 0,_Order:Int = 0)
    
 	Return now
 End Function
+
+Function GetCurrentDateTime:String()
+	Local date:=GetDate()
+    Local months:=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+    Print "Day: " + date[2]
+    Print "Month: " + date[1]
+   	Print "Yeahr: " + date[0]
+   	Print "Hour: " + date[3]
+   	Print "Min: " + date[4]
+   	Print "Sec: " + date[6]
+   ' Local now:String = hour+":"+min+":"+sec+"  "+day+" "+month+" "+year
+   ' Return now
+End Function 
 
 Function Screenshot:Image()
     Local width:Int  = mojo.app.DeviceWidth()
@@ -522,6 +553,134 @@ Class ManiacTextFile
 
 End Class
 
+Class ManiacQuizTextFile
+
+	Field filecontent:String
+	Field currentline:String
+	Field remaininglines:String
+
+	Method New(filename:String)
+	
+		filecontent = LoadString(filename)	' Load text file into string
+		remaininglines = filecontent.Replace("~n","") 'Remove newline characters
+	
+	End
+
+	
+	Method Eof:Bool() 'check for End-of-file - returns true if end of file reached
+
+		If remaininglines = ""
+			
+			Return True
+		Else
+			'Print "left: " + remaininglines
+			Return False
+		Endif
+	
+	End 
+	
+	Method GetLine:String()
+	
+		Return currentline	'return the current line in the text file
+	
+	End 
+	
+	Method ReadLine:Void()	'read the next line in the file into the currentline
+		Local newlinecharindex:Int
+		
+		If Eof()
+		
+		Else
+		
+			newlinecharindex = remaininglines.Find("~r") 'look for carriage returns and return the text that is before that..
+			currentline = remaininglines[0..newlinecharindex]
+			remaininglines = remaininglines[newlinecharindex+1..]
+			
+	 	Endif 
+	
+	End 
+
+	Method GetDataName:String() 
+		' see example for details on how this is used, basically returns text in the current line before the equals sign, useful for config files and the like
+		
+		Local equalsposition:Int
+		equalsposition = currentline.Find("=")
+		
+		If equalsposition = -1 Then Return "" Else Return currentline[0..equalsposition]
+		
+	
+	End 
+
+	Method GetDataFrage:String()
+	' see example for details on how this is used, basically returns text in the line after the equals sign..useful for config files and the like
+	
+		Local equalsposition:Int
+		equalsposition = currentline.Find("A)")
+		
+		
+		If equalsposition = -1 Then 
+			Return "" 
+		Else 
+			Return currentline[equalsposition+1..]
+		Endif 
+	End
+	Method GetDataValueA:String()
+	' see example for details on how this is used, basically returns text in the line after the equals sign..useful for config files and the like
+	
+		Local equalsposition:Int
+		equalsposition = currentline.Find("A)")
+		
+		
+		If equalsposition = -1 Then 
+			Return "" 
+		Else 
+			Return currentline[equalsposition+1..]
+		Endif 
+	End
+
+	Method GetDataValueB:String()
+	' see example for details on how this is used, basically returns text in the line after the equals sign..useful for config files and the like
+	
+		Local equalsposition:Int
+		equalsposition = currentline.Find("B)")
+		
+		
+		If equalsposition = -1 Then 
+			Return "" 
+		Else 
+			Return currentline[equalsposition+1..]
+		Endif 
+	End
+	
+	Method GetDataValueC:String()
+	' see example for details on how this is used, basically returns text in the line after the equals sign..useful for config files and the like
+	
+		Local equalsposition:Int
+		equalsposition = currentline.Find("C)")
+		
+		
+		If equalsposition = -1 Then 
+			Return "" 
+		Else 
+			Return currentline[equalsposition+1..]
+		Endif 
+	End
+	
+	Method GetDataValueD:String()
+	' see example for details on how this is used, basically returns text in the line after the equals sign..useful for config files and the like
+	
+		Local equalsposition:Int
+		equalsposition = currentline.Find("D)")
+		
+		
+		If equalsposition = -1 Then 
+			Return "" 
+		Else 
+			Return currentline[equalsposition+1..]
+		Endif 
+	End
+
+End Class
 
 
 

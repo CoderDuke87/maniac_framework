@@ -15,6 +15,7 @@
 		Added some Browns
 		Drw_Rect is now rotateable
 		completed Drw_ManiacText with Width & Height Alignment
+		Recoded Drw_Grid
 	
 	0.1.2~n
 		Added: some more Green , Blue & Yellow Colors~n
@@ -50,9 +51,9 @@ Import maniacDebug
 #End
 Function Drw_Rect:Int(_X:Float,_Y:Float,_Width:Float,_Height:Float,_Thickness:Int=1,_Angle:Float = 0.0)
 	'Maniac_Debug.addRenderedObject()
-	If MANIAC_DEBUG = True
-		Maniac_Debug.addTotDraws(4*_Thickness)
-	endif
+'	If MANIAC_DEBUG = True
+	'	Maniac_Debug.addTotDraws(4*_Thickness)
+	'endif
 	
 	'### Rotate The Matrix at the MidX/MidY Position around Angle
 	If _Angle <> 0.0
@@ -205,15 +206,13 @@ Function Drw_Grid:Void(_X:Float,_Y:Float,_Width:Float,_Height:Float,_CellsX:Int,
 	Local cell_h:Float = _Height/_CellsY
 
 	For Local x:Int = 1 To _CellsX-1
-		For Local y:Int = 1 To _CellsY-1
-		
-			'Vertikale
-			DrawLine(_X+x*cell_w,_Y,_X+x*cell_w,_Y+_CellsY*cell_h)
-			
-			'Horizontale
-			DrawLine(_X,_Y+y*cell_h,_X+_CellsX*cell_w,_Y+y*cell_h)
-			
-		Next
+		'Vertikale
+		DrawLine(_X+x*cell_w,_Y,_X+x*cell_w,_Y+_CellsY*cell_h)	
+	Next 
+	
+	For Local y:Int = 1 To _CellsY-1
+		'Horizontale
+		DrawLine(_X,_Y+y*cell_h,_X+_CellsX*cell_w,_Y+y*cell_h)
 	Next 
 
 End Function
@@ -390,7 +389,8 @@ End Function
 		End
 	</pre>
 #End
-Function Drw_ManiacText:Float(_Caption:String,_X:Float,_Y:Float,_Width:Float,_Height:Float,_AlignX:Int = ALIGNMENT_MIDDLE,_AlignY:Int = ALIGNMENT_MIDDLEY)
+Function Drw_ManiacText:Float(_Caption:String,_X:Float,_Y:Float,_Width:Float,_Height:Float,_AlignX:Int = ALIGNMENT_MIDDLE,_AlignY:Int = ALIGNMENT_MIDDLEY,_Scale:Float = 1.0)
+	
 	Local lW:Float
 	Local lH:Float = 0
 	If MANIAC_DEBUG = True
@@ -398,17 +398,18 @@ Function Drw_ManiacText:Float(_Caption:String,_X:Float,_Y:Float,_Width:Float,_He
 	endif
 	Select _AlignX
 		Case ALIGNMENT_LEFT
-			lW = 0
+			lW = 0 + 5
 			
 		Case ALIGNMENT_MIDDLE
-			Local l:Int = MANIAC_FONT.getW(_Caption)
+			Local l:Int = (MANIAC_FONT.getW(_Caption)*_Scale)
 			lW = _Width/2-l/2
-	
+			
+			
 		Case ALIGNMENT_RIGHT
-			Local l:Int = MANIAC_FONT.getW(_Caption)
-			lW = _Width-l/2	
+			Local l:Int = (MANIAC_FONT.getW(_Caption)*_Scale)
+			lW = _Width-l-5	
 		Default 
-			lW = 0
+			lW = 0 +5
 	End Select
 	
 	
@@ -417,14 +418,14 @@ Function Drw_ManiacText:Float(_Caption:String,_X:Float,_Y:Float,_Width:Float,_He
 		Case ALIGNMENT_TOP
 			lH = 0
 		Case ALIGNMENT_MIDDLEY
-			lH = _Height/2-MANIAC_FONT.getH()/2
+			lH = _Height/2- (MANIAC_FONT.getH()*_Scale)/2
 		Case ALIGNMENT_BOTTOM
 			lH = _Height-MANIAC_FONT.getH()
 		
 	End Select 
-	
+	ScaleAt(_X+lW, _Y+lH, _Scale, _Scale)
 	MANIAC_FONT.Wrap(_Caption,_X+lW,_Y+lH,_Width,_Height,_Caption.Length())
-	
+	ResetMatrix()
 	Local tW:Float = MANIAC_FONT.getW(_Caption)
 	Return (_X+lW+tW)
 End Function 
