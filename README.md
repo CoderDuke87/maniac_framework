@@ -17,12 +17,12 @@ like: Main.data/lib.
 * TabLane: *Can be uses for switching Views*
 
 #### MISC ####
-Here you can find some miscfunctions. maybe useful
+Here you can find some miscfunctions.
 
 #### GRAPHICS ####
 Functions:
-*Drw_Rect()
-*Drw_Circle()
-*Drw_Grid()
-*Drw_ManiacText()
-*Drw_Lightning()
+* Drw_Rect()
+* Drw_Circle()
+* Drw_Grid()
+* Drw_ManiacText()
+* Drw_Lightning()
