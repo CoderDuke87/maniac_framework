@@ -12,9 +12,17 @@ like: Main.data/lib.
 
 ### Featurelist###
 #### GUI ####
-* Button
+* Button: *Some Buttons for the UI*
+*( 4 Styles, Starting/Ending Animations, MouseOverAnims, OnMouseClickAnims )*
+* TabLane: *Can be uses for switching Views*
 
 #### MISC ####
 Here you can find some miscfunctions. maybe useful
 
 #### GRAPHICS ####
+Functions:
+*Drw_Rect()
+*Drw_Circle()
+*Drw_Grid()
+*Drw_ManiacText()
+*Drw_Lightning()
