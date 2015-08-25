@@ -1,4 +1,37 @@
-Import mojo
+#Rem monkeydoc Module maniac.maniacCalendar
+	Calender Module - Version 1.0 (alpha)  ~n
+	Copyright (C) 2015  Stephan Duckerschein~n
+	
+	This File contains the Calendar functions.
+	
+	VERSION HISTORY: ~n
+	1.0.0-rv1	@ 19.07.2015
+		- Added some Orange,Magenta and Purple
+		
+	1.0.0	@ 29.05.2015~n
+		- Updated the documentary~n
+		- Drw_Ellipsis, Drw_Grid, Drw_ManiacText are now rotatable~n
+		
+	0.1.3~n
+		Added some Browns~n
+		Drw_Rect is now rotateable~n
+		completed Drw_ManiacText with Width & Height Alignment~n
+		Recoded Drw_Grid~n
+	
+	0.1.2~n
+		Added: some more Green , Blue & Yellow Colors~n
+		Added ManiacImage~n
+		Added Drw_ManiacText~n
+	0.1.1~n
+		Added Lighning,Maniac_Color~n
+		~n
+	
+		
+		
+#End
+Import maniac
+
+
 
 Function CalcDateDifference:Int[](date1:Int[],date2:Int[])
 	Local diff:Int[] = New Int[6]
@@ -34,6 +67,9 @@ Function CalcDateDifference:Int[](date1:Int[],date2:Int[])
 End Function 
 
 
+#rem monkeydoc
+	Calculate the Difference of two dates in Years.
+#end 
 Function DiffYear:Int(date1:Int[],date2:Int[])
 	If (date2[1] > date1[1])
     	Return date2[0] - date1[0]
@@ -80,6 +116,9 @@ Function DiffYear:Int(date1:Int[],date2:Int[])
 End Function 
 
 
+#rem monkeydoc
+	Calculate the Difference of two dates in Days.
+#end
 Function DiffDays:Int(date1:Int[],date2:Int[])
 
   '// Ist die Ende-Uhrzeit auch hinter der Startuhrzeit ? Das ist der Normalfall.
@@ -128,8 +167,10 @@ Function DiffDays:Int(date1:Int[],date2:Int[])
 	Endif 
 End Function 
 
-
-Function DiffSeconds(date1:Int[], date2:Int[])
+#rem monkeydoc
+	Calculate the Difference of two dates in Seconds.
+#end
+Function DiffSeconds:int(date1:Int[], date2:Int[])
 
   	Local lErgebnis:Int = date2[5] - date1[5] 
  ' // lErgebnis kann durchaus negativ sein ! Wird aber gleich korrigiert.
@@ -164,6 +205,10 @@ Function DiffSeconds(date1:Int[], date2:Int[])
   	Endif 
 End Function 
 
+
+#rem
+	is Year x a leap year? True - yes it is, else it's not.
+#end 
 Function isLeapYear:Bool(_Year:int)
 
 	#rem
@@ -183,7 +228,18 @@ Function isLeapYear:Bool(_Year:int)
 End Function 
 
 
-Function getWeekday(_Day:Int, _Month:Int, _Year:int)
+#rem
+	Get the Weekday of a specific Date:
+	returns:
+  // 0 = Sonntag  	/ Sunday
+  // 1 = Montag		/ Monday
+  // 2 = Dienstag	/ Tuesday
+  // 3 = Mittwoch	/ Wednesday
+  // 4 = Donnerstag / Thursday
+  // 5 = Freitag	/ Friday
+  // 6 = Samstag	/ Saturday
+#end 
+Function getWeekday:int(_Day:Int, _Month:Int, _Year:Int)
 
 '//                       ungült Jan Feb Mrz Apr Mai Jun Jul Aug Sep Okt Nov Dez 
 	Local arrMonatsOffset:Int[] = [  0,  0,  3,  3,  6,  1,  4,  6,  2,  5,  0,  3,  5]
@@ -225,6 +281,11 @@ Function getWeekday(_Day:Int, _Month:Int, _Year:int)
   #end 
   return nResult
 End Function 
+
+
+#rem
+	Returns the days of a Month of a Year.
+#end 
 Function getDaysOfMonth:int(uMonat:Int , uJahr:Int )
 
  ' //                     ungült,Jan,Feb,Mrz,Apr,Mai,Jun,Jul,Aug,Sep,Okt,Nov,Dez
@@ -247,6 +308,10 @@ Function getDaysOfMonth:int(uMonat:Int , uJahr:Int )
   	Endif 
 End Function  
 
+
+#rem
+	Returns the number of Days of a Year
+#end 
 Function getDaysOfYear(uJahr:int)
 
 	If isLeapYear(uJahr)
@@ -256,6 +321,11 @@ Function getDaysOfYear(uJahr:int)
 	Endif 
 End Function  
 
+
+#rem
+	Returns how many days since 1.1.
+	
+#end 
 Function getDayOfYear:Int(uTag:Int,uMonat:Int,uJahr:int)
 
  ' // Der wievielte Tag des Jahres ist dieser Tag
@@ -425,6 +495,10 @@ long ZeitDifferenzInSekunden(const SYSTEMTIME & Startzeit, const SYSTEMTIME & En
 }    
 #end
 
+
+#rem
+	returns currentDateTime as a String (German Date Style)
+#end 
 Function GetCurrentDateTime:String()
 	Local date:=GetDate()
     Local months:=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
@@ -434,8 +508,8 @@ Function GetCurrentDateTime:String()
    	Print "Hour: " + date[3]
    	Print "Min: " + date[4]
    	Print "Sec: " + date[5]
-    'Local now:String = hour+":"+min+":"+sec+"  "+day+" "+month+" "+year
-    'Return now
+    Local now:String = hour+":"+min+":"+sec+"  "+day+" "+month+" "+year
+    Return now
 End Function
 
 Function BoolToString:String(_Bool:Bool)

@@ -1,10 +1,67 @@
 #Rem monkeydoc Module maniac.maniacTween
 	This File provides some tweening-effect stuff.
+	Tween Modue-Version 1.0  ~n
 	
-#End
-Import mojo
+	This is the Maniac LowLevel Module.~n
+	Functions in here should only be called by the Maniac Higher Level Functions.~n
+	So the user shouldn't worry about the following Classes and Functions, unless he needs some special lowlevel Functions~n
+	VERSION HISTORY: ~n
+	1.0.0	@ 29.05.2015~n
+		completed Documentation~n
+		
+<pre>
+'This Example Shows how This is how to use a tween.
+	
+'1. First You have to Import the Libs
+import mojo
+import maniac
+		
+'2. Main Function and App extending Class
+Function Main:Int()
+	New Example							
+	Return 0
+End
+		
+Class Example extends App
+	Field valueBeeingTweened:Tween
+	
+	Method OnCreate:Int()
+		SetUpdateRate( 60 )
+		maniacInit()			' THIS INITS THE MANIAC FRAMEWORK! THIS NEED TO BE DONE BEFORE USING IT!!!!!
+		
+			Using the little lowLevel helper Class ll_Tween to create a Tweener
+			_Style: "Bounce" , "Elastic", "Quad", "Sine", "Back", "Circ"
+			_Ease: "In","InOut","Out"
+		'
+		local _Style:String ="Back"
+		local _Ease:String	="InOut"
+		local _fromValue:float  = 0.2 
+		local _toValue:float 	= 500
+		local _AnimTime:int 	= 5000
+		valueBeeingTweened = ll_Tween(_Style,_Ease,_fromValue,_toValue,_AnimTime )
+	end Method 
+		
+	Method OnUpdate:int()
+		maniacUpdate()			'THIS UPDATES ALL NEEDED DATA FOR THE MANIAC-GLOBALS
+	end method
+		
+	Method OnRender:int()
+		Cls
+		
+		maniacDraw()
+	end Method  
+End class 
+</pre>
+	
+	
+	
+	Implemented Feature: LowLevel
 
-Import maniacDebug
+#End
+Import maniac
+
+'Import mojo
+'Import maniacDebug
 
 '--------------------------------------------------------------------------------------------------
 'Tween module contents

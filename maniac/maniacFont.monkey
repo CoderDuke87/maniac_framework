@@ -18,7 +18,7 @@
 #End
 
 Import mojo
-Import maniacLowLevel
+Import maniac
 
 Const CHARACTER_ASCII := 0
 Const CHARACTER_WIDTH := 1

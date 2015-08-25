@@ -1,15 +1,19 @@
 #Rem monkeydoc Module maniac.maniacMisc
 	Misc Module - Version 1.0 (alpha)  ~n
 	Copyright (C) 2015  Stephan Duckerschein~n
+	~n
+	Here are all Functions and Classes, that have no Special set or something. Or they may be some kind of experimental~n
 	
-	Here are all Functions and Classes, that have no Special set or something.
-	
+	History:
+	VERSION 1.0.0
+	- Added: mfCurrentDate(_Style) & mfCurrentTime(_Style)
 	
 #End
 
 
 Import mojo
 Import maniac
+
 'Import maniacString
 #If (TARGET <> "html5") And (TARGET <> "flash")
 	Import brl.FileSystem
@@ -41,6 +45,86 @@ Function Array2D:Int[][] (i:Int, j:Int,fill:Int = 0)
     Next 
     Return arr		
 End
+
+Function Array2Dmb:ManiacButton[][] (i:Int, j:Int,fill:Int = 0)
+	
+    Local arr:ManiacButton[][] = New ManiacButton[i][]
+    For Local ind = 0 Until i
+        arr[ind] = New ManiacButton[j]
+    Next
+    
+    For Local w:Int = 0 Until i
+    	For Local h:Int = 0 Until j
+    		arr[w][h] = New ManiacButton
+    	Next
+    Next 
+    Return arr		
+End
+
+
+Function Array2Dmlf:ManiacLogoField[][] (_X:Float,_Y:Float,_Width:Float,_Height:Float,i:Int, j:Int)
+	
+    Local arr:ManiacLogoField[][] = New ManiacLogoField[i][]
+    For Local ind = 0 Until i
+        arr[ind] = New ManiacLogoField[j]
+    Next
+    
+    Local wi:Float = _Width/i
+    Local hi:Float = _Height/j
+    For Local w:Int = 0 Until i
+    	For Local h:Int = 0 Until j
+    		arr[w][h] = New ManiacLogoField(_X+wi/2 +wi*w,_Y+hi/2+hi*h,wi,hi,2)
+    	Next
+    Next 
+    Return arr		
+End
+
+Function Array2Dmtf:ManiacTileField[][] (_X:Float,_Y:Float,_Width:Float,_Height:Float,i:Int, j:Int)
+	Print "Creating ArrayField"
+    Local arr:ManiacTileField[][] = New ManiacTileField[i][]
+    For Local ind = 0 Until i
+        arr[ind] = New ManiacTileField[j]
+    Next
+    
+    Local wi:Float = _Width/i
+    Local hi:Float = _Height/j
+    For Local w:Int = 0 Until i
+    	For Local h:Int = 0 Until j
+    		arr[w][h] = New ManiacTileField(_X+wi/2 +wi*w,_Y+hi/2+hi*h,wi,hi,2)
+    		'Print 
+    	Next
+    Next 
+    
+    
+    Return arr		
+End
+#Rem monkeydoc
+	This function creates a new 2 Dimensional float Array with i and j dimensions.
+	optionaly You can add a initial Value fill. Standard fill value will then be 0.
+	
+	<pre>
+	Import maniac
+	
+	Function Main:int()
+		local array:Int[][] = Array2Df(10,5)
+	End Function 
+	</pre>
+#End
+Function Array2Df:float[][] (i:Int, j:Int,fill:Int = 0)
+	
+    Local arr:float[][] = New float[i][]
+    For Local ind = 0 Until i
+        arr[ind] = New float[j]
+    Next
+    
+    For Local w:Int = 0 Until i
+    	For Local h:Int = 0 Until j
+    		arr[w][h] = fill
+    	Next
+    Next 
+    Return arr		
+End
+
 
 #Rem monkeydoc
 	This function creates a new 2 Dimensional String Array with i and j dimensions.
@@ -113,6 +197,25 @@ Function Array3D:Int[][][] (i:Int, j:Int,k:int,fill:Int = 0)
     Return arr		
 End
 
+
+Function Array3Df:Float[][][] (i:Int, j:Int,k:Int,fill:Int = 0) 
+    Local arr:Float[][][] = New Float[i][][]
+    For Local ind = 0 Until i
+        arr[ind] = New Float[j][]
+        For Local ind2:Int = 0 Until j
+        	arr[ind][ind2] = New Float[k]
+        Next 
+    Next
+    
+    For Local w:Int = 0 Until i
+    	For Local h:Int = 0 Until j
+    		For Local o:Int = 0 Until k
+    		arr[w][h][o] = fill
+    		Next 
+    	Next
+    Next 
+    Return arr		
+End
 #rem
 	a:Array2D<Int> = new Array2D<Int>(10)
 #end 
@@ -145,6 +248,7 @@ Class gArray2D<T>
 	
 End Class 
 
+
 #Rem monkeydoc
 	This Functions converts movement Data to Movements per Second.
 	It uses the built-in Updating System.
@@ -160,44 +264,43 @@ Function EqToFPS:Float(unitsPerSecond:Float)
   	Return unitsPerSecond * maniac_timeScale
 End Function
 
-
+function ArrayContains:Bool(_iarr:Int[],_value:Int)
+	For Local t:Int = 0 Until _iarr.Length()
+		If _iarr[t] = _value
+			Return true
+		Endif 
+	Next 
+	Return False 
+End Function  
 #Rem monkeydoc
 	This Functions Checks if the MouseCursor is within this rectangle dimensions.
 	
 	_X & _Y are the Top-Left Corner
 #End
-Function MOBox:Bool(_X:Float, _Y:Float, _Width:Float, _Height:float)
-	Maniac_Debug.addTotCall()
-	Maniac_Debug.addTotCalc()
-	Maniac_Debug.addCalc()
+Function MOBox:Bool(_X:Float, _Y:Float, _Width:Float, _Height:Float)
+	If MANIAC_DEBUG = True
+		Maniac_Debug.addTotCall()
+		Maniac_Debug.addTotCalc()
+		Maniac_Debug.addCalc()
+	Endif 
+	
 	If _X < MouseX() And _X + _Width > MouseX() And _Y < MouseY() And _Y + _Height > MouseY()
 		Return True
 	Else
 		Return False
 	Endif
-
 End Function
 
-#rem
-Function CollideBox:Bool(_X:Float, _Y:Float, _Width:Float, _Height:Float)
-	Maniac_Debug.addTotCall()
-	Maniac_Debug.addTotCalc()
-	Maniac_Debug.addCalc()
-	If _X < MouseX() And _X + _Width > MouseX() And _Y < MouseY() And _Y + _Height > MouseY()
-		Return True
-	Else
-		Return False
-	Endif
-
-End Function
-#end 
+ 
 #Rem monkeydoc
 	This Functions Checks if the MouseCursor is within this circle dimensions.
 #End
 Function MOCircle:Bool(ix:Int,iy:Int,ir:Int)
-	Maniac_Debug.addTotCall()
-	Maniac_Debug.addTotCalc()
-	Maniac_Debug.addCalc()
+	If MANIAC_DEBUG = True
+		Maniac_Debug.addTotCall()
+		Maniac_Debug.addTotCalc()
+		Maniac_Debug.addCalc()
+	Endif 
 	Local dx:Float = ix - MouseX()
 	Local dy:Float = iy - MouseY()
 						
@@ -261,14 +364,18 @@ Function InterpolateAngle:Float(a:Float,b:Float,blend:Float = 0.5)
 End Function
 
 
-#Rem monkeydoc
-	This Function returns the Time Stamp of the underlaying Operating System as a String.
-#End
+
 Const TIMESTAMP_TIME_DATE:Int = 0
 Const TIMESTAMP_DATE_TIME:Int = 1
 Const TIMESTAMP_DATE_ONLY:Int = 2
 Const TIMESTAMP_TIME_ONLY:Int = 3
 
+
+#Rem monkeydoc
+	#### DEPRICATED ####
+	This function will be usable up to Version 1.1
+	This Function returns the Time Stamp of the underlaying Operating System as a String.
+#End
 Function GetTimeStamp:String(_Style:Int = 0,_Order:Int = 0)
 	'Local currDate:String 
 	'Maniac_Debug.addCalc()
@@ -310,6 +417,95 @@ Function GetTimeStamp:String(_Style:Int = 0,_Order:Int = 0)
 	Return now
 End Function
 
+ 
+
+Const CURRENTDATE_STYLE_GERMAN:Int 		= 1
+Const CURRENTDATE_STYLE_AMERICAN:Int	= 2
+Const CURRENTDATE_STYLE_FOLDERSORT:Int	= 3
+#rem
+	This Function returns the current Time (Year,Month,Day) of the underlaying Operating System as a String.~n
+	Prams: ~n
+	_Style: CURRENTDATE_STYLE_GERMAN, CURRENTDATE_STYLE_AMERICAN, CURRENTDATE_STYLE_FOLDERSORT
+	
+	
+	returnings:
+	_GERMAN 	>>  25.02.2015
+	_AMERICAN 	>>  08\27\2015
+	_FOLDERSORT >>  2015_08_31
+#end
+Function mfCurrentDate:String(_Style:Int = 0)
+	'Local currDate:String 
+	'Maniac_Debug.addCalc()
+	Local date:=GetDate()
+    
+    Local months:=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+    
+    Local day:=("0"+date[2])[-2..]
+    Local month:=months[date[1]-1]
+    Local year:=date[0]
+    Local hour:=("0"+date[3])[-2..]
+    Local min:=("0"+date[4])[-2..]
+    Local sec:=("0"+date[5])[-2..] + "." + ("00"+date[6])[-3..]
+     
+    Local now:String '=hour+":"+min+":"+sec+"  "+day+" "+month+" "+year
+    Select _Style
+    	Case CURRENTDATE_STYLE_GERMAN
+    		now = day+"."+month+"."+year
+    		
+    	Case CURRENTDATE_STYLE_AMERICAN
+    		now = month+"\"+day+"\"+year
+    	 
+    	Case CURRENTDATE_STYLE_FOLDERSORT
+			now = year+"_"+month+"_"+day
+
+    	Default
+    End Select   
+   
+	Return now
+End Function
+
+
+Function mfCurrentTime:String(_Style:Int = 0,_Order:Int = 0)
+	'Local currDate:String 
+	'Maniac_Debug.addCalc()
+	Local date:=GetDate()
+    
+    Local months:=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+    
+    Local day:=("0"+date[2])[-2..]
+    Local month:=months[date[1]-1]
+    Local year:=date[0]
+    Local hour:=("0"+date[3])[-2..]
+    Local min:=("0"+date[4])[-2..]
+    Local sec:=("0"+date[5])[-2..] + "." + ("00"+date[6])[-3..]
+     
+    Local now:String '=hour+":"+min+":"+sec+"  "+day+" "+month+" "+year
+    Select _Style
+    	Case TIMESTAMP_TIME_DATE
+    		now = hour+":"+min+":"+sec+"  "+day+" "+month+" "+year
+    	Case TIMESTAMP_DATE_TIME
+    		Select _Order
+    			Case 0
+    				now = year+" "+month+" "+day+"   "+hour+":"+min+":"+sec
+    			Case 1
+    				now = year+" "+month+" "+day+"   "+hour+":"+min
+    			Case 2
+    				now = year+" "+month+" "+day
+    		End Select 
+    	 
+    	Case TIMESTAMP_DATE_ONLY
+    		Select _Order
+    			Case 0
+    				now = month+"_"+day
+    		End Select 
+    	Case TIMESTAMP_TIME_ONLY
+    	
+    	Default
+    End Select   
+   
+	Return now
+End Function
+#rem
 Function GetCurrentDateTime:String()
 	Local date:=GetDate()
     Local months:=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
@@ -322,7 +518,7 @@ Function GetCurrentDateTime:String()
    ' Local now:String = hour+":"+min+":"+sec+"  "+day+" "+month+" "+year
    ' Return now
 End Function 
-
+#end 
 Function Screenshot:Image()
     Local width:Int  = mojo.app.DeviceWidth()
     Local height:Int = mojo.app.DeviceHeight()
@@ -435,6 +631,44 @@ Function roman:String(v:Int )
 	Return rom
 End Function
 
+
+
+Class ManiacLink
+	Field url:String 
+	Field Caption:String 
+	Field X:Float,Y:Float
+
+	Field txtWidth:Int = 7
+	Field txtHeight:Int = 13
+	
+	Method New(_X:Float,_Y:Float,_Url:String,_Caption:String = "Link")
+		X = _X
+		Y =_Y
+		'Width = _Width
+		'Height = _Height
+		url = _Url
+		Caption = _Caption
+	End Method
+	
+	Method Draw()
+	
+		SetColor 0,0,220
+		If MOBox(X-2,Y-2,(Caption.Length()*txtWidth)+4,txtHeight+4)
+			DrawLine X,Y+15,X+ (Caption.Length()*txtWidth),Y+15
+		Endif
+		DrawText Caption , X,Y
+		
+	End Method
+	
+	Method Update()
+		If TouchHit()
+			If MOBox(X-2,Y-2,(Caption.Length()*txtWidth)+4,txtHeight+4)
+				OpenUrl(url)
+			Endif 
+		Endif
+	End Method 
+
+End Class 
 
 Function ConvertFloatToString:String(ifloat:Float,ilength:Int,ibconv:Bool = False)
 	  

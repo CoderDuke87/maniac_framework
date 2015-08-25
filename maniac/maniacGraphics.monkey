@@ -1,26 +1,28 @@
 #Rem monkeydoc Module maniac.maniacGraphics
-	Graphics Module - Version 0.1.3 (alpha)  ~n
+	Graphics Module - Version 1.0 (alpha)  ~n
 	Copyright (C) 2015  Stephan Duckerschein~n
 	
-	Here You can find some "ad-Hoc" Graphic-Elements to use for your App.
-	They have to be managed by the Programmer.
+	Here You can find some "ad-Hoc" Graphic-Elements to use for your App.~n
+	They have to be managed by the Programmer.~n
 	
-		
-	ToDo For v. 0.1.3:
-		- Complete Colors: GELB,ORANGE,MAGENTA,BROWN,PURPLE +####
-		- Make Primitives rotateable 
-		~n
 	VERSION HISTORY: ~n
+	1.0.0-rv1	@ 19.07.2015
+		- Added some Orange,Magenta and Purple
+		
+	1.0.0	@ 29.05.2015~n
+		- Updated the documentary~n
+		- Drw_Ellipsis, Drw_Grid, Drw_ManiacText are now rotatable~n
+		
 	0.1.3~n
-		Added some Browns
-		Drw_Rect is now rotateable
-		completed Drw_ManiacText with Width & Height Alignment
-		Recoded Drw_Grid
+		Added some Browns~n
+		Drw_Rect is now rotateable~n
+		completed Drw_ManiacText with Width & Height Alignment~n
+		Recoded Drw_Grid~n
 	
 	0.1.2~n
 		Added: some more Green , Blue & Yellow Colors~n
-		Added ManiacImage
-		Added Drw_ManiacText
+		Added ManiacImage~n
+		Added Drw_ManiacText~n
 	0.1.1~n
 		Added Lighning,Maniac_Color~n
 		~n
@@ -29,11 +31,12 @@
 		
 #End
 
-
+Import maniac
+#rem
 Import mojo
 Import maniacLowLevel
 Import maniacDebug
-
+#end 
 #rem
 	Included Functions:
 		- Drawing outline Rect
@@ -81,12 +84,18 @@ Function Drw_Rect:Int(_X:Float,_Y:Float,_Width:Float,_Height:Float,_Thickness:In
 	Endif 
 End Function
 
+
 #Rem monkeydoc
 	### READY TO USE ###~n
 	This Function Draws a outlining ellipsis at _X,_Y with the Dimensions _Witdth and _Height and the number of cells in x and y direction.
 	You must call this within the OnRender() Method
 #End
-Function Drw_Ellipsis( posx:Float, posy:Float, width:Float, height:Float)
+Function Drw_Ellipsis( posx:Float, posy:Float, width:Float, height:Float,_Angle:Float = 0.0)
+	
+	'### Rotate The Matrix at the MidX/MidY Position around Angle
+	If _Angle <> 0.0
+		RotateAt(_X+_Width/2,_Y+_Height/2, _Angle)
+	Endif
 	
    	Local x:Float 
    	Local y:Float 
@@ -132,6 +141,11 @@ Function Drw_Ellipsis( posx:Float, posy:Float, width:Float, height:Float)
 	       y=y- 1  
 	    EndIf
 	Wend
+	
+	'### Reset The MAtrix
+	If _Angle <> 0.0
+		ResetMatrix()
+	Endif 
 End Function 
 
 
@@ -194,12 +208,17 @@ End Function
 	This Function Draws a Grid at the Position _X,_Y with the Dimensions _Witdth and _Height and the number of cells in x and y direction
 	You must call this within the OnRender() Method
 #End
-Function Drw_Grid:Void(_X:Float,_Y:Float,_Width:Float,_Height:Float,_CellsX:Int,_CellsY:Int)
+Function Drw_Grid:Void(_X:Float,_Y:Float,_Width:Float,_Height:Float,_CellsX:Int,_CellsY:Int,_Angle:Float = 0.0)
 	If MANIAC_DEBUG = True
 		Maniac_Debug.addTotDraws(2*_CellsX*_CellsY)
 	endif
 	'zeichnet ein Gitter an Position posx,posy (links oben), w/h breite bzw. hÃƒÂ¶he (des gesamten Grids) und zieht dabei cntx/cnty striche in der horizontalen,bzw vertikalen
 	'allerdings wird hierbei das Gitter automatisch angepasst
+	'### Rotate The Matrix at the MidX/MidY Position around Angle
+	If _Angle <> 0.0
+		RotateAt(_X+_Width/2,_Y+_Height/2, _Angle)
+	Endif
+	
 	
 	'1. bestimmen der breite eines KÃƒÂ¤stchens anhand der Breite und der anzahl
 	Local cell_w:Float = _Width/_CellsX
@@ -214,7 +233,11 @@ Function Drw_Grid:Void(_X:Float,_Y:Float,_Width:Float,_Height:Float,_CellsX:Int,
 		'Horizontale
 		DrawLine(_X,_Y+y*cell_h,_X+_CellsX*cell_w,_Y+y*cell_h)
 	Next 
-
+	
+	'### Reset The MAtrix
+	If _Angle <> 0.0
+		ResetMatrix()
+	Endif
 End Function
 
 
@@ -238,6 +261,14 @@ Function Drw_Stars(_X:Float,_Y:Float,_Width:Float,_Height:Float,_MaxStars:Int = 
 	Next 
 End Function 
 
+
+#Rem monkeydoc
+	### READY TO USE ###~n
+	This Function Draws a Loading-Bar at the Position _X,_Y with the Dimensions _Witdth and _Height 
+	You must call this within the OnRender() Method
+	
+	_Prozent must be between 0.0 and 1.0
+#End
 Function Drw_LoadingBar(_X:Float,_Y:Float,_Width:Float,_Height:Float,_Caption:String,_Prozent:Float)
 	If _Prozent >= 0.0 And _Prozent <= 1.0
 		SetColor 75,75,75
@@ -252,10 +283,12 @@ Function Drw_LoadingBar(_X:Float,_Y:Float,_Width:Float,_Height:Float,_Caption:St
 	Endif 
 End Function 
 
+
 #Rem monkeydoc
 	### READY TO USE ###~n
 	This Function Draws a Loading-Bar at the Position _X,_Y with the Dimensions _Witdth and _Height 
 	You must call this within the OnRender() Method
+	This Function calculates the percentage by its own, by giving
 #End
 Function Drw_LoadingBar(_X:Float,_Y:Float,_Width:Float,_Height:Float,_Caption:String,_CurrValue:Float,_MaxValue:Float)
 	Local pr:Float = _CurrValue/_MaxValue
@@ -373,6 +406,7 @@ Function Drw_Lightning(sx#,sy#,fx#,fy#,depth=4)
 	Next 
 End Function
 
+
 #Rem monkeydoc
 	### READY TO USE ###~n
 	Draws a wrapped Text (ManiacFontText) to the _X,_Y,_Width,_Height Container with the _AlignX & _AlignY Parameter.
@@ -389,7 +423,12 @@ End Function
 		End
 	</pre>
 #End
-Function Drw_ManiacText:Float(_Caption:String,_X:Float,_Y:Float,_Width:Float,_Height:Float,_AlignX:Int = ALIGNMENT_MIDDLE,_AlignY:Int = ALIGNMENT_MIDDLEY,_Scale:Float = 1.0)
+Function Drw_ManiacText:Float(_Caption:String,_X:Float,_Y:Float,_Width:Float,_Height:Float,_AlignX:Int = ALIGNMENT_MIDDLE,_AlignY:Int = ALIGNMENT_MIDDLEY,_Scale:Float = 1.0,_Angle:Float=0.0)
+	
+	'### Rotate The Matrix at the MidX/MidY Position around Angle
+	If _Angle <> 0.0
+		RotateAt(_X+_Width/2,_Y+_Height/2, _Angle)
+	Endif
 	
 	Local lW:Float
 	Local lH:Float = 0
@@ -425,7 +464,11 @@ Function Drw_ManiacText:Float(_Caption:String,_X:Float,_Y:Float,_Width:Float,_He
 	End Select 
 	ScaleAt(_X+lW, _Y+lH, _Scale, _Scale)
 	MANIAC_FONT.Wrap(_Caption,_X+lW,_Y+lH,_Width,_Height,_Caption.Length())
-	ResetMatrix()
+	
+	'### Reset The MAtrix
+	'If _Angle <> 0.0
+		ResetMatrix()
+	'Endif
 	Local tW:Float = MANIAC_FONT.getW(_Caption)
 	Return (_X+lW+tW)
 End Function 
@@ -439,6 +482,9 @@ Const COLOR_GREEN:Int		=	20
 Const COLOR_DARKGREEN:Int 	= 	27
 Const COLOR_BLUE:Int		= 	30
 Const COLOR_YELLOW:Int 		= 	40
+Const COLOR_YELLOWLIGHT:Int	= 	47
+Const COLOR_YELLOWLIGHT2:Int	= 	48
+Const COLOR_BEIGE:Int 		=   46
 Const COLOR_ORANGE:Int 		= 	50
 Const COLOR_MAGENTA:Int		= 	60
 Const COLOR_BROWN:Int		= 	70
@@ -448,6 +494,13 @@ Const COLOR_PLAYER1:Int =  801
 Const COLOR_PLAYER2:Int =  802
 Const COLOR_PLAYER3:Int	=  803
 Const COLOR_PLAYER4:Int =  804
+
+Const COLOR_SCHEME_LPASTEL_BLUE_VERYDARK:Int 		= 301
+Const COLOR_SCHEME_LPASTEL_BLUE_DARK:Int			= 302
+Const COLOR_SCHEME_LPASTEL_BLUE_BRIGHT:Int			= 303
+Const COLOR_SCHEME_LPASTEL_BLUE_VERYBRIGHT:Int		= 304
+Const COLOR_SCHEME_LPASTEL_BLUE_BACKGROUND:Int		= 305
+
 
 #Rem monkeydoc
 	### EXPERIMENTAL ### ~n
@@ -557,6 +610,7 @@ Function Maniac_Color(_Color:Int)
 		Case 39
 			SetColor 0,0,70
 			
+			
 			'### GELB ###
 		Case 40
 			SetColor 255,255,0
@@ -566,15 +620,44 @@ Function Maniac_Color(_Color:Int)
 			SetColor 255,255,50
 		Case 43
 			SetColor 215,215,0
+		Case 44
+			SetColor 205,205,0
+		Case 45
+			SetColor 139,139,0
+		Case 46
+			SetColor 245,245,220
+		Case 47
+			SetColor 255,255,224
+		Case 48
+			SetColor 255,236,139
 			
 		
 		'###	ORANGE ###
 		Case 50
+			SetColor 255,165,0
+		Case 51
 			SetColor 255,140,0
+		Case 52
+			SetColor 255,127,0
+		Case 53
+			SetColor 238,118,0
+		Case 54
+			SetColor 205,133,0
+		Case 55
+			SetColor 205,102,0
+		Case 56
+			SetColor 180,132,11
+			
 			
 		'### MAGENTA ###
 		Case 60
 			SetColor 255,0,255
+		Case 61
+			SetColor 238,0,238
+		Case 62
+			SetColor 205,0,205
+		Case 63
+			SetColor 139,0,139
 			
 		'### BROWN ###
 		Case 70
@@ -587,26 +670,40 @@ Function Maniac_Color(_Color:Int)
 			SetColor 165,42, 42
 		Case 74
 			SetColor 160,82,45
-		Case 74
+		Case 75
 			SetColor 139,69,19
 			
 			
 		'### PURPLE +####
 		Case 80
 			SetColor 75,0,130 
+		Case 81
+			SetColor 160,32,240
 			
 		Case COLOR_PLAYER1
-			SetColor 0,0,255
+			SetColor 50,50,230
 			
 		Case COLOR_PLAYER2
-			SetColor 0,255,0
+			SetColor 30,230,30
 			
 		Case COLOR_PLAYER3
-			SetColor 255,0,0
+			SetColor 255,30,30
 			
 		Case COLOR_PLAYER4
 			SetColor 255,255,255
-			
+		
+		'### COLORSCHEME SPECIFIC COLOURS ###
+		'LPASTEL
+		Case COLOR_SCHEME_LPASTEL_BLUE_VERYDARK
+			SetColor 144,144,217
+		Case COLOR_SCHEME_LPASTEL_BLUE_DARK
+			SetColor 166,166,229
+		Case COLOR_SCHEME_LPASTEL_BLUE_BACKGROUND
+			SetColor 189,189,239
+		Case COLOR_SCHEME_LPASTEL_BLUE_BRIGHT
+			SetColor 210,210,246
+		Case COLOR_SCHEME_LPASTEL_BLUE_VERYBRIGHT
+			SetColor 230,230,252
 	End Select 
 End Function 
 

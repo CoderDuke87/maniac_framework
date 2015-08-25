@@ -1,5 +1,5 @@
 #Rem monkeydoc Module maniac.maniacLowLevel
-	LowLevel Modue-Version 0.1.4  ~n
+	LowLevel Modue-Version 1.0  ~n
 	Copyright (C) 2015  Stephan Duckerschein~n
 	
 	This is the Maniac LowLevel Module.~n
@@ -7,22 +7,27 @@
 	So the user shouldn't worry about the following Classes and Functions, unless he needs some special lowlevel Functions~n
 	~n
 	VERSION HISTORY: ~n
-	
+	1.0.0	@ 29.05.2015~n
+		completed Documentation~n
+		added MANIAC_SWIPE_xxx
+	~n
 	0.1.4  @ 21.01.2015~n
-		added: ll_ContainDate, ll_convertsDateToMonth, ll_convertDateToDay
+		added: ll_ContainDate, ll_convertsDateToMonth, ll_convertDateToDay~n
 	0.1.3  @ 18.01.2015~n
-		added: ll_Tween
+		added: ll_Tween~n
 	0.1.2~n
-		added: ll_Width
+		added: ll_Width~n
 	0.1.1~n
-		Integrated some Debug Stuff
+		Integrated some Debug Stuff~n
 	0.1.0~n
-		added some
+		added some~n
 	
 	Implemented Feature: LowLevel
 		- Calculating Distance between two Points
 		- Calculating Delta Timing Values
 		- Some Date Convert & Checking Functions
+		- find a Date within a String
+		- some Image Render functions
 #End
 
 
@@ -33,7 +38,13 @@ Import maniac
 Global gl_clicked:Bool
 Global gl_mousereleased:Bool
 #end
-
+Global man_mx:Float
+Global man_my:Float
+Global ManiacSwipe:Int  			= 0
+Const MANIAC_SWIPE_RIGHT:Int		= 1
+Const MANIAC_SWIPE_UP:Int			= 4
+Const MANIAC_SWIPE_LEFT:Int			= 3
+Const MANIAC_SWIPE_DOWN:Int 		= 2
 #Rem monkeydoc
 	### READY TO USE ###~n
 	This Functions checks the actual MouseState.~n
@@ -46,10 +57,32 @@ Function Maniac_CheckMouseState()
 	gl_mousereleased = False 
 	If gl_clicked = False and TouchHit()
 		gl_clicked = True 
+		man_mx = MouseX()
+		man_my = MouseY()
 	Endif
 		
 	If TouchDown()
+		Local dx:Float = Abs(man_mx - MouseX())
+		Local dy:Float = Abs(man_my - MouseY())
 		
+		If (dx > 10) Or (dy > 10)
+			If dx > dy
+				If (man_mx - MouseX()) > 0
+					ManiacSwipe = MANIAC_SWIPE_LEFT
+				Else
+					ManiacSwipe = MANIAC_SWIPE_RIGHT
+				Endif 
+			Elseif	dx <= dy
+				If (man_my - MouseY()) > 0
+					ManiacSwipe = MANIAC_SWIPE_UP
+				Else
+					ManiacSwipe = MANIAC_SWIPE_DOWN
+				Endif
+			Endif 
+			
+		Else 
+			ManiacSwipe = -1
+		Endif 
 	Else
 		If gl_clicked = True
 			gl_mousereleased = True 
@@ -63,7 +96,7 @@ End Function
 #Rem monkeydoc
 	### READY TO USE ###~n
 	This Function calculates the distance between two Points in Pixels.
-	returning the Ergebnis as a Float
+	returning the result as a Float
 #End
 Function ll_Distance:Float(fromX:Float,fromY:Float,toX:Float,toY:Float)
 	If MANIAC_DEBUG = True
@@ -74,6 +107,7 @@ Function ll_Distance:Float(fromX:Float,fromY:Float,toX:Float,toY:Float)
 	Local dy:Float = fromY-toY
 	Return Sqrt(dx*dx+dy*dy)
 End Function 
+
 
 #Rem monkeydoc
 	### READY TO USE ###~n
@@ -94,9 +128,29 @@ Function ll_UpdateSpeeds()
   	maniac_timeScale = deltaTime / 1000.0
 End Function
 
+
 #Rem monkeydoc
 	### READY TO USE ###~n
-	This function Calculates the width of ... .
+	This function Calculates the width of a rect within a "box" containing rects with same size.~n
+<pre>
+        /------- _Number -------\
+________|___________|___________|________
+|	____1____	____2____	____3____	|
+|	|witdh	|	|		|	|		|	|
+|   '''''''''   '''''''''   '''''''''	|
+|_______________________________________|
+|<----------^---^ _Width -------------->|
+            |   |
+			/	 \
+		   /      \
+		  _Distance
+
+#rem
+	This function returns the width.
+#end 
+</pre>
+
+
 #End
 Function ll_Width:Float(_Width:Float,_Number:Float,_Distance:Float)
 	If MANIAC_DEBUG = True
@@ -109,7 +163,10 @@ Function ll_Width:Float(_Width:Float,_Number:Float,_Distance:Float)
 End Function 
 
 
-
+#rem monkeydoc
+	### Ready TO USE ###~n
+	
+#end
 Function ll_ConvertToBool:bool(_int:Int)
 	If _int = 0
 		Return False 
@@ -118,28 +175,33 @@ Function ll_ConvertToBool:bool(_int:Int)
 	Endif 
 End Function 
 
-#rem 
+#rem monkeydoc
 	Gibt den "Grid"-Wert des Cursors zurück.
 	Bsp:
 	Ihre Map besteht aus 20x20'er Kacheln 100pxl von beiden Ordinaten abstand.
 	dann enstricht die Mouseposition 134,110 einem Gridwert von 2,1
 #end 
-Function ll_GridX:Int(width_p:Int, offset:Int = 0)
+Function ll_GridX:Int(width_p:float, offset:Int = 0)
 	
 	Return (MouseX() -offset) / (width_p)
 
 End Function
 
-Function ll_GridY:Int(width_p:Int, offset:Int = 0)
+Function ll_GridY:Int(width_p:float, offset:Int = 0)
 
 	Return (MouseY() -offset) / (width_p)
 
 End Function
+
+
 #Rem monkeydoc
 	### Experimental ###~n
 	This Function initialises a new Tween Object with Costum setting.
 	Makes the Tweening a little bit more code-dynamic
 	Useable: Bounce, Elastic, Quad, Sine , Back , Circ
+	
+	_Style: "Bounce" , "Elastic", "Quad", "Sine", "Back", "Circ"
+	_Ease: "In","InOut","Out"
 	ToDo: -Linear , Cubic , Expo , Quart , Quint
 	
 #End
@@ -356,6 +418,10 @@ Function ll_convertDateToDay:Int(_Date:String)
 
 End Function 
 
+
+#rem
+	Rotates the Matrix of current Screen
+#end 
 Function ll_Rotate(x:Float, y:Float, angle:Float)
 	PushMatrix				' Store current rotation, scale, etc
 	Translate x, y			' Shift origin across to here
@@ -457,13 +523,5 @@ Function ResetMatrix:Void()
     SetMatrix(1,0,0,1,0,0)
 End
 
-#Rem monkeydoc
-	TO DO
-	This wil be a Class for a Logo. 
-	It consists of seperate Layers, all will be animated by its own.
-#End
-Class ManiacLogo
-	Field X:Float,Y:Float,Width:Float,Height:Float
-	
-End Class 
+
 
